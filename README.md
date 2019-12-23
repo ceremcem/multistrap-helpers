@@ -5,8 +5,7 @@ This scripts are intended to create a Debian rootfs from scratch for:
 	1. Use as LXC container:
 		
 		host:# ./build.sh 
-		host:# ./do-chroot.sh stretch-rootfs
-		debian:# /config-rootfs.sh
+		debian:# /config-rootfs.sh # for the first run
 
 	2. Create a fully bootable distro/installation:
 
