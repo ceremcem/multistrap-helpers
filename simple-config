@@ -1,0 +1,10 @@
+[General]
+unpack=true
+bootstrap=Debian
+aptsources=Debian
+
+[Debian]
+packages=
+source=http://ftp.uk.debian.org/debian
+keyring=debian-archive-keyring
+suite=stretch
