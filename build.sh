@@ -12,5 +12,8 @@ else
 	[[ -d $target_dir ]] && rm -rf $target_dir
 fi
 multistrap -a amd64 -d $target_dir -f simple-config
+
+echo "debian" > $target_dir/etc/hostname
+
 echo "Do not forget to run /config-rootfs.sh after you are chrooted"
 ./do-chroot.sh $target_dir
