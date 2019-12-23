@@ -6,7 +6,7 @@ bootstrap=Debian Net Utils
 aptsources=Debian
 # copied into the rootfs/ to be manually executed later
 # configscript=path/to/config.sh
-configscript=./config-rootfs.sh
+configscript=
 # executed within the host environment (useful for nothing)
 setupscript=
 
