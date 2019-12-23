@@ -1,10 +1,27 @@
 [General]
+arch=arm64
 unpack=true
-bootstrap=Debian
+noauth=true
+bootstrap=Debian Net Utils
 aptsources=Debian
+# copied into the rootfs/ to be manually executed later
+# configscript=path/to/config.sh
+configscript=./config-rootfs.sh
+# executed within the host environment (useful for nothing)
+setupscript=
 
 [Debian]
-packages=
+packages=apt
 source=http://ftp.uk.debian.org/debian
 keyring=debian-archive-keyring
 suite=stretch
+
+[Net]
+#Basic packages to enable the networking
+packages=netbase net-tools ethtool udev iproute iputils-ping ifupdown isc-dhcp-client
+# "ssh" package is conflicting with "openssh-server"
+source=http://ftp.uk.debian.org/debian
+
+[Utils]
+packages=locales adduser nano less wget dialog usbutils
+source=http://cdn.debian.net/debian
