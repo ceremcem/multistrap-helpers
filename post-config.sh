@@ -1,4 +1,5 @@
 #!/bin/bash
+set -eu
 # From: https://wiki.debian.org/Multistrap#Steps_for_Squeeze_and_later
 
 # run after chrooting into the rootfs
