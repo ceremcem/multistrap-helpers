@@ -7,7 +7,9 @@ else
   exit 1
 fi
 
-apt-get install linux-image-4.9.0-11-amd64 \
+apt-get install linux-image-amd64 \
 	grub2 \
 	systemd
-ln -s /lib/systemd/systemd /sbin/init
+[[ -e /sbin/init ]] || ln -s /lib/systemd/systemd /sbin/init
+
+echo "Done."
