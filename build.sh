@@ -14,9 +14,6 @@ fi
 multistrap -a amd64 -d $target_dir -f simple-config
 
 echo "debian" > $target_dir/etc/hostname
-cp config-rootfs.sh $target_dir/
-cp install-to-disk/bootable-rootfs.sh $target_dir/
-
-
-echo "Do not forget to run /config-rootfs.sh after you are chrooted"
-./do-chroot.sh $target_dir
+cp post-config.sh $target_dir/
+./do-chroot.sh $target_dir \
+	"[[ -f /post-config.sh ]] && /post-config.sh && rm /post-config.sh"
