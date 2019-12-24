@@ -41,4 +41,4 @@ umount $1/run
 
 rm $1/var/lib/dbus/machine-id 2> /dev/null
 
-echo "Done."
+echo "Cleaned up chroot."
