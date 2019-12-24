@@ -1,5 +1,6 @@
 #!/bin/bash
-target_dir=./stretch-rootfs
+target=${1:-stretch}
+target_dir=./$target-rootfs
 echo "Removing target dir or multistrap will likely fail"
 if mountpoint $target_dir/dev > /dev/null; then
 	echo "ERROR: "
@@ -11,7 +12,7 @@ if mountpoint $target_dir/dev > /dev/null; then
 else
 	[[ -d $target_dir ]] && rm -rf $target_dir
 fi
-multistrap -a amd64 -d $target_dir -f simple-config
+multistrap -a amd64 -d $target_dir -f $target-config
 
 echo "debian" > $target_dir/etc/hostname
 cp post-config.sh $target_dir/
