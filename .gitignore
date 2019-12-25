@@ -1,3 +1,4 @@
 *-rootfs/
+*-rootfs.bak*
 config.sh
 *.swp
