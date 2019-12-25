@@ -4,11 +4,6 @@ unpack=true
 noauth=true
 bootstrap=Debian Net Utils
 aptsources=Debian
-# copied into the rootfs/ to be manually executed later
-# configscript=path/to/config.sh
-configscript=
-# executed within the host environment (useful for nothing)
-setupscript=
 
 [Debian]
 packages=apt
@@ -23,5 +18,5 @@ packages=netbase net-tools ethtool udev iproute iputils-ping ifupdown isc-dhcp-c
 source=http://ftp.uk.debian.org/debian
 
 [Utils]
-include=./config.d/utils-config
-
+packages=locales adduser nano less wget dialog usbutils tmux
+source=http://cdn.debian.net/debian

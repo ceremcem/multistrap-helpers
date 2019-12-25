@@ -1,3 +1,0 @@
-[Utils]
-packages=locales adduser nano less wget dialog usbutils tmux
-source=http://cdn.debian.net/debian

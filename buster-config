@@ -18,5 +18,5 @@ packages=netbase net-tools ethtool udev iproute2 iputils-ping ifupdown isc-dhcp-
 source=http://ftp.uk.debian.org/debian
 
 [Utils]
-include=./config.d/utils-config
-
+packages=locales adduser nano less wget dialog usbutils tmux
+source=http://cdn.debian.net/debian
