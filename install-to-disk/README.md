@@ -21,15 +21,11 @@
 		echo "new-hostname" > /mnt/foo-root/rootfs/etc/hostname
 
 		./do-chroot.sh /mnt/foo-actual-root /make-bootable-rootfs.sh
+		
+		# From this point on, those commands are intended to run 
+		# inside the chroot environment: 
+		# -------------------------------------------------------
 		grub-install /dev/sdX --boot-directory=/boot
-
-		# create /sbin/init
-		apt-get install systemd
-		ln -s /lib/systemd/systemd /sbin/init
-
-		# Prevent "root account is locked" error:
-		echo "Create a password for your root account:"
-		passwd	
 
 		# Add necessary tools to the initramfs if 
 		# needed, such as cryptsetup and lvm:
