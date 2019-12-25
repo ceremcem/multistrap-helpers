@@ -2,3 +2,4 @@
 *-rootfs.bak*
 config.sh
 *.swp
+*.vmdk
