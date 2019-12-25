@@ -25,4 +25,5 @@ dpkg-reconfigure locales
 if [[ "$preinst_ok" = false ]]; then
 	echo "WARNING: No $dash_preinst file found,"
 	echo "so not executed."
+	exit 1
 fi
