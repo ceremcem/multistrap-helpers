@@ -19,9 +19,6 @@
 	rsync -avP multistrap-stretch-rootfs/ /mnt/foo-actual-root
 	echo "new-hostname" > /mnt/foo-root/rootfs/etc/hostname
 
-	# install kernel, etc. 
-	cp make-bootable-rootfs.sh /mnt/foo-actual-root
-
 	./do-chroot.sh /mnt/foo-actual-root /make-bootable-rootfs.sh
 	grub-install /dev/sdX --boot-directory=/boot
 

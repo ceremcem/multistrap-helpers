@@ -9,7 +9,16 @@ fi
 
 apt-get install linux-image-amd64 \
 	grub2 \
-	systemd
+	systemd \
+	initramfs-tools \
+	kbd
 [[ -e /sbin/init ]] || ln -s /lib/systemd/systemd /sbin/init
 
+# edit initramfs.conf to change KEYMAP=y
+CONFIG_FILE=/etc/initramfs-tools/initramfs.conf
+KEY="KEYMAP"
+VALUE="y"
+sed -i "s/^\($KEY\s*=\s*\).*\$/\1$VALUE/" $CONFIG_FILE
+
+update-initramfs -u
 echo "Done."
