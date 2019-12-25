@@ -11,9 +11,9 @@ if [[ -f $dash_preinst ]]; then
 	$dash_preinst install && preinst_ok=true
 fi
 dpkg --configure -a
-#mount proc -t proc /proc # mounted before do-chroot.sh
-#dpkg --configure -a
-#umount /proc
+
+unset DEBIAN_FRONTEND DEBCONF_NONINTERACTIVE_SEEN
+
 
 # fixes the perl warning
 export LANGUAGE=en_US.UTF-8
