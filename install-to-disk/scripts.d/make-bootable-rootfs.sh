@@ -20,5 +20,9 @@ KEY="KEYMAP"
 VALUE="y"
 sed -i "s/^\($KEY\s*=\s*\).*\$/\1$VALUE/" $CONFIG_FILE
 
+# Prevent "root account is locked" error:
+echo "Create a password for your root account:"
+passwd
+
 update-initramfs -u
 echo "Done."
