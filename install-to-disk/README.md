@@ -1,4 +1,6 @@
-1. format-the-server-disk*.sh ...
+# Install to Physical Disk
+
+1. `format-the-server-disk*.sh` ...
 
 		boot partition: /dev/sdX1
 		luks partition: /dev/sdX2
@@ -8,10 +10,9 @@
 2. Install Grub2
 
 		./attach-disk.sh
-		rsync -avP my-rootfs/ /mnt/foo-actual-root
+		./rsync-to-disk.sh my-rootfs/
 		echo "new-hostname" > /mnt/foo-root/rootfs/etc/hostname
-
-		./do-chroot.sh /mnt/foo-actual-root
+		./chroot-to-disk.sh
 		
 		# From this point on, those commands are intended to run 
 		# inside the chroot environment: 
