@@ -1,5 +1,5 @@
 lvm_name="foo"
-boot_part='UUID="4371a575-3a37-476f-8831-05558db4e8a8"'
+boot_part='UUID=4371a575-3a37-476f-8831-05558db4e8a8'
 crypt_part='UUID=bf1a7669-e944-444d-83cc-102f34689544'
 
 # you probably won't need to change those:

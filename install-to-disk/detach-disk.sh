@@ -6,7 +6,7 @@ safe_source () { [[ ! -z ${1:-} ]] && source $1; _dir="$(cd "$(dirname "${BASH_S
 safe_source $_sdir/config.sh
 
 echo "Detaching ${lvm_name}..."
-boot_part_dev=$(blkid | grep $boot_part | cut -d: -f1)
+boot_part_dev=$(blkid | grep ${boot_part##UUID=} | cut -d: -f1)
 umount $boot_part_dev || true
 umount $root_mnt || true
 umount $rootfs_mnt || true
