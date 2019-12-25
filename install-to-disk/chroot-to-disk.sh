@@ -5,5 +5,5 @@ safe_source () { [[ ! -z ${1:-} ]] && source $1; _dir="$(cd "$(dirname "${BASH_S
 
 safe_source $_sdir/config.sh
 
-./do-chroot.sh $rootfs_mnt
+../do-chroot.sh $rootfs_mnt
 
