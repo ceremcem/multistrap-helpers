@@ -7,24 +7,16 @@
 		
 2. Install Grub2
 
-		cryptsetup open /dev/sdX2 sdX_crypt
-		lvscan
-		mount /dev/mapper/foo-root /mnt/foo-root
-		btrfs sub create /mnt/foo-root/rootfs
-		# if rootfs is a btrfs subvolume, directly mount it 
-		# before chroot'ing into it
-		mkdir /mnt/foo-actual-root
-		mount -t btrfs -o subvol=/rootfs /dev/mapper/foo-root /mnt/foo-actual-root
-		mkdir /mnt/foo-actual-root/boot
-		mount /dev/sdX1 /mnt/foo-root/rootfs/boot
-		rsync -avP multistrap-stretch-rootfs/ /mnt/foo-actual-root
+		./attach-disk.sh
+		rsync -avP my-rootfs/ /mnt/foo-actual-root
 		echo "new-hostname" > /mnt/foo-root/rootfs/etc/hostname
 
-		./do-chroot.sh /mnt/foo-actual-root /make-bootable-rootfs.sh
+		./do-chroot.sh /mnt/foo-actual-root
 		
 		# From this point on, those commands are intended to run 
 		# inside the chroot environment: 
 		# -------------------------------------------------------
+		/make-bootable-rootfs.sh
 		grub-install /dev/sdX --boot-directory=/boot
 
 		# Add necessary tools to the initramfs if 
