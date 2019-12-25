@@ -22,4 +22,6 @@ done < <(lvs --noheadings -o active,vg_name,lv_name | \
  	awk '$1 == "active" {print $2"-"$3}')
 
 cryptsetup close $crypt_dev_name || true
+
+rmdir "$rootfs_mnt" "$root_mnt" 2> /dev/null || true
 echo "Done."
