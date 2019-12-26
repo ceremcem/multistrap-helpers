@@ -14,3 +14,9 @@ This scripts are intended to create a Debian rootfs from scratch for:
 
 	1. Follow the step #1
 	2. Follow ./install-to-disk/README.md
+
+# Install 
+
+```
+apt-get install multistrap
+```
