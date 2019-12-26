@@ -12,5 +12,5 @@ This scripts are intended to create a Debian rootfs from scratch for:
 
 2. Create a fully bootable distro/installation:
 
-	## Follow the step #1, and then follow
-	## README.md in ./install-to-disk/
+	1. Follow the step #1
+	2. Follow ./install-to-disk/README.md
