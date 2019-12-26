@@ -1,7 +1,7 @@
 [General]
 arch=arm64
 unpack=true
-noauth=true
+noauth=no
 bootstrap=Debian Net Utils
 aptsources=Debian
 
