@@ -6,7 +6,7 @@ bootstrap=Debian Net Utils
 aptsources=Debian
 
 [Debian]
-packages=apt
+packages=apt systemd
 source=http://http.debian.net/debian
 keyring=debian-archive-keyring
 suite=buster
@@ -18,5 +18,5 @@ packages=netbase net-tools ethtool udev iproute2 iputils-ping ifupdown isc-dhcp-
 source=http://http.debian.net/debian
 
 [Utils]
-packages=locales adduser nano less wget dialog usbutils tmux
+packages=locales adduser nano less wget dialog usbutils tmux sudo
 source=http://http.debian.net/debian

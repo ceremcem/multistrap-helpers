@@ -6,7 +6,7 @@ bootstrap=Debian Net Utils
 aptsources=Debian
 
 [Debian]
-packages=apt
+packages=apt systemd
 source=http://ftp.uk.debian.org/debian
 keyring=debian-archive-keyring
 suite=stretch
