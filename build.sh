@@ -16,6 +16,8 @@ if [[ -z $target ]]; then
 	exit 2
 fi
 
+[[ $(whoami) = "root" ]] || { sudo "$0" "$@"; exit 0; }
+
 target_dir=./$target-rootfs
 mkdir -p $target_dir
 if [ ! -z "$(ls -A $target_dir)" ]; then

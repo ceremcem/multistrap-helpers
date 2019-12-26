@@ -1,5 +1,4 @@
-#!/bin/sh
-#
+#!/bin/bash
 
 help(){
 	cat << HELP
@@ -11,6 +10,8 @@ HELP
 }
 
 [[ -d ${1:-} ]] || { help && exit; }
+
+[[ $(whoami) = "root" ]] || { sudo "$0" "$@"; exit 0; }
 
 cmd=
 if [[ ! -z ${2:-} ]]; then
