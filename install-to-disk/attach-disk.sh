@@ -5,6 +5,8 @@ safe_source () { [[ ! -z ${1:-} ]] && source $1; _dir="$(cd "$(dirname "${BASH_S
 
 safe_source $_sdir/config.sh
 
+[[ $(whoami) = "root" ]] || { sudo "$0" "$@"; exit 0; }
+
 # Attach the disk
 # ----------------
 mkdir -p "$root_mnt" "$rootfs_mnt"

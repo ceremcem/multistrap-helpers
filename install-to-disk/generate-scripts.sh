@@ -5,6 +5,8 @@ safe_source () { [[ ! -z ${1:-} ]] && source $1; _dir="$(cd "$(dirname "${BASH_S
 
 safe_source $_sdir/config.sh
 
+[[ $(whoami) = "root" ]] || { sudo "$0" "$@"; exit 0; }
+
 filename="$rootfs_mnt/install-grub.sh"
 echo "Generating $filename"
 cat << EOF > $filename

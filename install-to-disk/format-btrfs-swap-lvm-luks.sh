@@ -43,6 +43,7 @@ else
     exit 1
 fi
 
+[[ $(whoami) = "root" ]] || { sudo "$0" "$@"; exit 0; }
 
 D_DEVICE=${ROOT_NAME}_crypt
 

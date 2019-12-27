@@ -5,6 +5,8 @@ safe_source () { [[ ! -z ${1:-} ]] && source $1; _dir="$(cd "$(dirname "${BASH_S
 
 safe_source $_sdir/config.sh
 
+[[ $(whoami) = "root" ]] || { sudo "$0" "$@"; exit 0; }
+
 echo "Detaching ${lvm_name}..."
 boot_part_dev=$(blkid | grep ${boot_part##UUID=} | cut -d: -f1)
 umount $boot_part_dev || true

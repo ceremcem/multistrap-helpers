@@ -11,5 +11,7 @@ if [[ -z ${1:-} ]]; then
 fi
 src="$1"
 
+[[ $(whoami) = "root" ]] || { sudo "$0" "$@"; exit 0; }
+
 rsync -avP --delete $src/ $rootfs_mnt
 
