@@ -3,15 +3,20 @@ set -eu
 
 safe_source () { [[ ! -z ${1:-} ]] && source $1; _dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"; _sdir=$(dirname "$(readlink -f "$0")"); }; safe_source
 
+function echo_and_run {
+  echo "$@"
+  eval $(printf '%q ' "$@") < /dev/tty
+}
+
 safe_source $_sdir/config.sh
 
 [[ $(whoami) = "root" ]] || { sudo "$0" "$@"; exit 0; }
 
 echo "Detaching ${lvm_name}..."
 boot_part_dev=$(blkid | grep ${boot_part##UUID=} | cut -d: -f1)
-umount $boot_part_dev || true
-umount $root_mnt || true
-umount $rootfs_mnt || true
+echo_and_run umount $boot_part_dev || true
+echo_and_run umount $root_mnt || true
+echo_and_run umount $rootfs_mnt || true
 while read dev; do
 	if [[ ! -z `cat /proc/mounts | grep "$dev"` ]]; then
 		echo "$dev seems to be mounted, unmounting first."
