@@ -1,4 +1,4 @@
-# Multistrap Example
+# Multistrap Helpers
 
 This scripts are intended to create a Debian rootfs from scratch for: 
 
