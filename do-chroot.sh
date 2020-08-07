@@ -41,7 +41,6 @@ mount --bind /run $1/run
 
 chroot $1 /bin/bash $cmd
 
-echo "Cleaning up..."
 umount $1/dev/pts
 umount $1/dev
 umount $1/sys

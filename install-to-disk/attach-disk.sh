@@ -14,6 +14,12 @@ function echo_and_run {
 
 # Attach the disk
 # ----------------
+if [[ -n $image_file ]]; then
+	[[ ! -f $image_file ]] && { echo "Can not find image file: $image_file"; exit 1; }
+	echo "Found image, associating relevant loopback devices:"
+	kpartx -a $image_file
+fi
+
 mkdir -p "$root_mnt" "$rootfs_mnt"
 cryptsetup open $crypt_part $crypt_dev_name
 lvscan
@@ -40,7 +46,10 @@ EOL
 fi
 set -e
 
-[[ -d $root_mnt/$subvol ]] || btrfs sub create $root_mnt/$subvol
+if [[ ! -d $root_mnt/$subvol ]]; then
+	echo "$root_mnt/$subvol is required, automatically creating."
+	btrfs sub create $root_mnt/$subvol
+fi
 mount -t btrfs -o subvol=$subvol $root_dev $rootfs_mnt
 
 # mount boot partition

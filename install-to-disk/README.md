@@ -8,7 +8,8 @@
 			/dev/mapper/foo-root
 		
 2. Install Grub2
-
+		
+		cp -a ./scripts.d/* my-rootfs/
 		./attach-disk.sh
 		./rsync-to-disk.sh my-rootfs/
 		./generate-scripts.sh

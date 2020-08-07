@@ -45,6 +45,7 @@ multistrap -a amd64 -d $target_dir -f $target-config
 
 echo "debian" > $target_dir/etc/hostname
 cp post-config.sh $target_dir/
-cp install-to-disk/scripts.d/* $target_dir/
 ./do-chroot.sh $target_dir \
-	"[[ -f /post-config.sh ]] && /post-config.sh && rm /post-config.sh"
+	"[[ -f /post-config.sh ]] && /post-config.sh && rm /post-config.sh; exit 0"
+
+echo "Building $target_dir is finished."

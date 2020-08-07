@@ -3,8 +3,14 @@ set -eu
 
 # CAUTION: Give the arguments in the correct order
 
-DEVICE=$1      # /dev/sdc
+target=$1      # /dev/sdc or /path/to/disk.img
 ROOT_NAME=$2   # zeytin
+
+file=
+if [[ -f $target ]]; then
+    echo "Handling $target as disk image file."
+    file=$target
+fi
 
 errcho () {
     >&2 echo -e "$*"
@@ -34,16 +40,39 @@ die(){
     exit 12
 }
 
-[[ -b $DEVICE ]] || die "$DEVICE should be a device"
+DEVICE=
+cleanup(){
+	cat <<EOL
 
-if prompt_yes_no "We are about to format $DEVICE. Are you sure?"; then
-    echo "OK, formatting $DEVICE"
+	INFO: Created devices are not umounted.
+	INFO: You should manually umount when you are done:
+
+		1. Create the config file.
+		2. Run ./detach-disk.sh
+
+EOL
+}
+
+trap cleanup EXIT
+
+if prompt_yes_no "We are about to format $target. Are you sure?"; then
+    echo "OK, formatting $target"
 else
     echo "Nothing has done. Exiting."
     exit 1
 fi
 
 [[ $(whoami) = "root" ]] || { sudo "$0" "$@"; exit 0; }
+
+if [[ -n "$file" ]]; then
+    DEVICE=`losetup -f`
+    echo "Using loop device: $DEVICE"
+    losetup "$DEVICE" "$file"
+else
+    DEVICE=$target
+fi
+
+[[ -b $DEVICE ]] || die "$DEVICE should be a device"
 
 D_DEVICE=${ROOT_NAME}_crypt
 
@@ -57,7 +86,7 @@ echo "Creating partition table on ${DEVICE}..."
 # document what we're doing in-line with the actual commands
 # Note that a blank line (commented as "default" will send a empty
 # line terminated with a newline to take the fdisk default.
-sed -e 's/\s*\([\+0-9a-zA-Z]*\).*/\1/' << EOF | fdisk ${DEVICE}
+sed -e 's/\s*\([\+0-9a-zA-Z]*\).*/\1/' << EOF | fdisk ${file:-DEVICE}
   o # clear the in memory partition table
   n # new partition
   p # primary partition
@@ -78,22 +107,33 @@ sed -e 's/\s*\([\+0-9a-zA-Z]*\).*/\1/' << EOF | fdisk ${DEVICE}
   q # and we're done
 EOF
 
+if [[ -z "$file" ]]; then
+    partt1="${DEVICE}1"
+    partt2="${DEVICE}2"
+else
+    kpartx -av "$file"
+    partt1="/dev/mapper/${DEVICE#"/dev/"}p1"
+    partt2="/dev/mapper/${DEVICE#"/dev/"}p2"
+
+    [[ -d $(readlink $partt1) ]] || { echo "No $partt1 device";  }
+fi
+
 echo "Creating ext2 filesystem for boot partition"
-mkfs.ext2 "${DEVICE}1"
+mkfs.ext2 "$partt1"
 
-echo "Creating LUKS layer on ${DEVICE}2..."
-cryptsetup -y -v luksFormat "${DEVICE}2"
+echo "Creating LUKS layer on $partt2..."
+cryptsetup -y -v luksFormat "$partt2"
 
-cryptsetup open "${DEVICE}2" $D_DEVICE
+cryptsetup open "$partt2" $D_DEVICE
 
 echo "Creating LVM partitions"
 pvcreate "/dev/mapper/$D_DEVICE" || echo_err "physical volume exists.."
 vgcreate "${ROOT_NAME}" "/dev/mapper/$D_DEVICE" || echo_err "volume group exists.."
-lvcreate -n swap -L 16G $ROOT_NAME
+lvcreate -n swap -L 1G $ROOT_NAME
 lvcreate -n root -l 100%FREE $ROOT_NAME
 
 echo "Formatting swap and root (btrfs) partitions"
 mkswap $SWAP_PART
 mkfs.btrfs $ROOT_PART
 
-echo "done..."
+echo "Formatting is finished."

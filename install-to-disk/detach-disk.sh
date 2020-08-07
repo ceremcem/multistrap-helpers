@@ -31,4 +31,9 @@ done < <(lvs --noheadings -o active,vg_name,lv_name | \
 cryptsetup close $crypt_dev_name || true
 
 rmdir "$rootfs_mnt" "$root_mnt" 2> /dev/null || true
+
+if [[ -n $image_file ]]; then
+        echo "Removing relevant loopback devices:"
+        kpartx -d $image_file
+fi
 echo "Done."
