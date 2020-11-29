@@ -1,16 +1,6 @@
 #!/bin/bash
 set -eu
-
-# CAUTION: Give the arguments in the correct order
-
-target=$1      # /dev/sdc or /path/to/disk.img
-ROOT_NAME=$2   # zeytin
-
-file=
-if [[ -f $target ]]; then
-    echo "Handling $target as disk image file."
-    file=$target
-fi
+safe_source () { [[ ! -z ${1:-} ]] && source $1; _dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"; _sdir=$(dirname "$(readlink -f "$0")"); }; safe_source
 
 errcho () {
     >&2 echo -e "$*"
@@ -40,53 +30,48 @@ die(){
     exit 12
 }
 
-DEVICE=
-cleanup(){
-	cat <<EOL
-
-	INFO: Created devices are not umounted.
-	INFO: You should manually umount when you are done:
-
-		1. Create the config file.
-		2. Run ./detach-disk.sh
-
-EOL
-}
-
-trap cleanup EXIT
-
-if prompt_yes_no "We are about to format $target. Are you sure?"; then
-    echo "OK, formatting $target"
-else
-    echo "Nothing has done. Exiting."
-    exit 1
-fi
-
 [[ $(whoami) = "root" ]] || { sudo "$0" "$@"; exit 0; }
 
-if [[ -n "$file" ]]; then
-    DEVICE=`losetup -f`
-    echo "Using loop device: $DEVICE"
-    losetup "$DEVICE" "$file"
-else
-    DEVICE=$target
-fi
+config_file=${1:-}
+[[ ! -f $config_file ]] && { echo "Usage: $(basename $0) path/to/config-file"; exit 1; }
+safe_source $config_file
 
-[[ -b $DEVICE ]] || die "$DEVICE should be a device"
+[[ -n $wwn ]] && [[ -n $image_file ]] && \
+    die "Either \$wwn or \$image_file should be set in $config_file."
+
+DEVICE=
+file=
+if [[ -n $wwn ]]; then 
+    DEVICE=$(readlink -f /dev/disk/by-id/$wwn)
+elif [[ -f $image_file ]]; then
+    file=$image_file
+    echo "INFO: Handling $file as disk image file."
+fi
+target=${file:-$DEVICE}
+
+ROOT_NAME=${lvm_name:-}   # zeytin
+[[ -z $ROOT_NAME ]] && \
+    die "\$lvm_name variable should be set in $config_file."
+
+if prompt_yes_no "We are about to format $target. (lvm name: $lvm_name) Are you sure?"; then
+    echo "OK, formatting $target"
+else
+    die "Nothing has done. Exiting."
+fi
 
 D_DEVICE=${ROOT_NAME}_crypt
 
 SWAP_PART="/dev/mapper/${ROOT_NAME}-swap"
 ROOT_PART="/dev/mapper/${ROOT_NAME}-root"
 
-echo "Creating partition table on ${DEVICE}..."
+echo "Creating partition table on ${target}..."
 # to create the partitions programatically (rather than manually)
 # we're going to simulate the manual input to fdisk
 # The sed script strips off all the comments so that we can
 # document what we're doing in-line with the actual commands
 # Note that a blank line (commented as "default" will send a empty
 # line terminated with a newline to take the fdisk default.
-sed -e 's/\s*\([\+0-9a-zA-Z]*\).*/\1/' << EOF | fdisk ${file:-DEVICE}
+sed -e 's/\s*\([\+0-9a-zA-Z]*\).*/\1/' << EOF | fdisk $target
   o # clear the in memory partition table
   n # new partition
   p # primary partition
@@ -107,16 +92,22 @@ sed -e 's/\s*\([\+0-9a-zA-Z]*\).*/\1/' << EOF | fdisk ${file:-DEVICE}
   q # and we're done
 EOF
 
-if [[ -z "$file" ]]; then
-    partt1="${DEVICE}1"
-    partt2="${DEVICE}2"
-else
+if [[ -n $file ]]; then
     kpartx -av "$file"
+    DEVICE=$(losetup --associated $file | cut -d: -f1)
     partt1="/dev/mapper/${DEVICE#"/dev/"}p1"
     partt2="/dev/mapper/${DEVICE#"/dev/"}p2"
-
-    [[ -d $(readlink $partt1) ]] || { echo "No $partt1 device";  }
+else
+    partt1="${DEVICE}1"
+    partt2="${DEVICE}2"
 fi
+
+[[ -b $DEVICE ]] || \
+    die "$DEVICE should be a device file."
+
+# Double check that we created partitions.
+[[ -b $partt1 ]] || \
+    die "Something went wrong, there should be a $partt1 device."
 
 echo "Creating ext2 filesystem for boot partition"
 mkfs.ext2 "$partt1"
@@ -137,3 +128,8 @@ mkswap $SWAP_PART
 mkfs.btrfs $ROOT_PART
 
 echo "Formatting is finished."
+echo "Closing devices. (\$DEVICE: $DEVICE, \$D_DEVICE: $D_DEVICE)"
+lvchange -a n $ROOT_PART
+lvchange -a n $SWAP_PART
+cryptsetup close $D_DEVICE
+[[ -f $file ]] && kpartx -dv $file

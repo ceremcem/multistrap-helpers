@@ -3,9 +3,13 @@ set -eu
 
 safe_source () { [[ ! -z ${1:-} ]] && source $1; _dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"; _sdir=$(dirname "$(readlink -f "$0")"); }; safe_source
 
-safe_source $_sdir/config.sh
+config_file=${1:-}
+[[ ! -f $config_file ]] && { echo "Usage: $(basename $0) path/to/config-file"; exit 1; }
+safe_source $config_file
 
 [[ $(whoami) = "root" ]] || { sudo "$0" "$@"; exit 0; }
+
+cp -v $_sdir/scripts.d/* $rootfs_mnt
 
 filename="$rootfs_mnt/install-grub.sh"
 echo "Generating $filename"

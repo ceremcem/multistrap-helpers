@@ -1,20 +1,39 @@
+# Creating Config File
+
+copy config.sh-example and edit accordingly. Use `get-disk-tag.sh` to get partition
+UUID's of your disk.
+
+# Creating Bootable System
+
+Either use a real disk or a disk image to test your installation on VirtualBox. 
+
+"_DISK_" is either "disk.img" or "/dev/sdX" where sdX is your target drive.
+
+# Create a disk image (if necessary)
+
+1. `./create-disk-image ./config.sh`
+
 # Install to Physical Disk
 
-1. `format-the-server-disk*.sh` ...
+1. Create the designed partition layout:
 
-		boot partition: /dev/sdX1
-		luks partition: /dev/sdX2
-		lvm on /dev/sdX2:
-			/dev/mapper/foo-root
+        ./format-btrfs-swap-lvm-luks.sh ./config.sh
+
+  This will create the following layout:
+
+		boot partition: _DISK_1
+		luks partition: _DISK_2
+		lvm on _DISK_2:
+			/dev/mapper/${lvm_name}-root
+			/dev/mapper/${lvm_name}-swap
 		
-2. Install Grub2
+2. Send files to remote disk, install Grub2, configure LUKS:
 		
-		cp -a ./scripts.d/* my-rootfs/
-		./attach-disk.sh
-		./rsync-to-disk.sh my-rootfs/
-		./generate-scripts.sh
-		echo "new-hostname" > /mnt/foo-root/rootfs/etc/hostname
-		./chroot-to-disk.sh
+		./attach-disk.sh ./config.sh
+		./rsync-to-disk.sh ./config.sh my-rootfs/
+		./generate-scripts.sh ./config.sh           # generate the required scripts for booting
+		source ./config.sh; echo "new-hostname" > ${rootfs_mnt}/etc/hostname
+		./chroot-to-disk.sh ./config.sh
 		
 		# From this point on, those commands are intended to run 
 		# inside the chroot environment: 
@@ -46,3 +65,6 @@
 		# 4. `update-grub`
 
 
+# Test by using VirtualBox 
+
+1. `./create-vmdk-for _DISK_` # Error messages will assist you in the process

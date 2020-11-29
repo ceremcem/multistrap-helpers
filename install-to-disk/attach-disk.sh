@@ -3,7 +3,9 @@ set -eu
 
 safe_source () { [[ ! -z ${1:-} ]] && source $1; _dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"; _sdir=$(dirname "$(readlink -f "$0")"); }; safe_source
 
-safe_source $_sdir/config.sh
+config_file=${1:-}
+[[ ! -f $config_file ]] && { echo "Usage: $(basename $0) path/to/config-file"; exit 1; }
+safe_source $config_file
 
 function echo_and_run {
   echo "$@"
@@ -17,7 +19,7 @@ function echo_and_run {
 if [[ -n $image_file ]]; then
 	[[ ! -f $image_file ]] && { echo "Can not find image file: $image_file"; exit 1; }
 	echo "Found image, associating relevant loopback devices:"
-	kpartx -a $image_file
+	kpartx -av $image_file
 fi
 
 mkdir -p "$root_mnt" "$rootfs_mnt"

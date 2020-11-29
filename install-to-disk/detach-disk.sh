@@ -8,7 +8,9 @@ function echo_and_run {
   eval $(printf '%q ' "$@") < /dev/tty
 }
 
-safe_source $_sdir/config.sh
+config_file=${1:-}
+[[ ! -f $config_file ]] && { echo "Usage: $(basename $0) path/to/config-file"; exit 1; }
+safe_source $config_file
 
 [[ $(whoami) = "root" ]] || { sudo "$0" "$@"; exit 0; }
 
@@ -34,6 +36,6 @@ rmdir "$rootfs_mnt" "$root_mnt" 2> /dev/null || true
 
 if [[ -n $image_file ]]; then
         echo "Removing relevant loopback devices:"
-        kpartx -d $image_file
+        kpartx -dv $image_file
 fi
 echo "Done."

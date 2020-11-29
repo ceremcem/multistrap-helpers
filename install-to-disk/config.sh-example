@@ -1,4 +1,10 @@
+## Set one of the followings:
+#image_file=
+#wwn=
+
 lvm_name="foo"
+
+# use ./get-disk-info.sh to identify the UUID's:
 boot_part='UUID=4371a575-3a37-476f-8831-05558db4e8a8'
 crypt_part='UUID=bf1a7669-e944-444d-83cc-102f34689544'
 
