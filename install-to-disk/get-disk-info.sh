@@ -44,8 +44,6 @@ if [[ -n $disk_id ]]; then
     echo
 fi
 
-echo "UUID information: "
-echo
 sudo lsblk -f $disk_device
 
 [[ -n $file ]] && sudo kpartx -d $file

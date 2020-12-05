@@ -4,7 +4,7 @@ set -eu
 safe_source () { [[ ! -z ${1:-} ]] && source $1; _dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"; _sdir=$(dirname "$(readlink -f "$0")"); }; safe_source
 
 if [[ -b ${1:-} ]]; then
-	device=$1
+	device=$(readlink -f $1)
 	disk_id=$(ls -l /dev/disk/by-id/ | grep "/$(basename $device)$" | awk '{print $9}' | grep -v wwn)
 	disk_path="/dev/disk/by-id/$disk_id"
 	vmdk_name="$disk_id.vmdk"
@@ -21,6 +21,7 @@ elif [[ -f ${1:-} ]]; then
 else
 	echo
 	echo "Usage: $(basename $0) /dev/sdX"
+	echo "Usage: $(basename $0) /dev/disk/by-id/disk-wwn"
 	echo "Usage: $(basename $0) /path/to/disk.img"
 	echo
 	exit 1
