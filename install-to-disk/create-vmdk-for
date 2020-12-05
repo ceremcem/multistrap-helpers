@@ -5,7 +5,7 @@ safe_source () { [[ ! -z ${1:-} ]] && source $1; _dir="$(cd "$(dirname "${BASH_S
 
 if [[ -b ${1:-} ]]; then
 	device=$1
-	disk_id=$(ls -l /dev/disk/by-id/ | grep "/$(basename $disk_device)$" | awk '{print $9}' | grep -v wwn)
+	disk_id=$(ls -l /dev/disk/by-id/ | grep "/$(basename $device)$" | awk '{print $9}' | grep -v wwn)
 	disk_path="/dev/disk/by-id/$disk_id"
 	vmdk_name="$disk_id.vmdk"
 elif [[ -f ${1:-} ]]; then
@@ -31,6 +31,7 @@ echo "Device: ${device:-$file}, Disk id: ${disk_id:-$lo_device}"
 
 # Taken from: https://superuser.com/a/756731/187576
 _device=${disk_path:-$lo_device}
+vmdk_name="virtualbox-$vmdk_name"
 echo "Creating vmdk for ${_device}"
 VBoxManage internalcommands createrawvmdk \
     -filename $_sdir/$vmdk_name \
@@ -49,6 +50,8 @@ in the settings before creating the VM:
         -> $vmdk_name -> [modify]
             -> Type: Writethrough
 
+Also double check that you have r/w permissions
+to the $_device file.
 EOF
 
 echo "All done."

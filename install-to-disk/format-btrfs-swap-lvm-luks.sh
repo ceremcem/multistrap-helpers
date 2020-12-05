@@ -36,14 +36,14 @@ config_file=${1:-}
 [[ ! -f $config_file ]] && { echo "Usage: $(basename $0) path/to/config-file"; exit 1; }
 safe_source $config_file
 
-[[ -n $wwn ]] && [[ -n $image_file ]] && \
+[[ -n ${wwn:-} ]] && [[ -n ${image_file:-} ]] && \
     die "Either \$wwn or \$image_file should be set in $config_file."
 
 DEVICE=
 file=
-if [[ -n $wwn ]]; then 
+if [[ -n ${wwn:-} ]]; then 
     DEVICE=$(readlink -f /dev/disk/by-id/$wwn)
-elif [[ -f $image_file ]]; then
+elif [[ -f ${image_file:-} ]]; then
     file=$image_file
     echo "INFO: Handling $file as disk image file."
 fi

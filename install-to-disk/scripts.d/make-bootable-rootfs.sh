@@ -7,6 +7,7 @@ else
   exit 1
 fi
 
+apt-get update
 apt-get install linux-image-amd64 \
 	grub2 \
 	systemd \

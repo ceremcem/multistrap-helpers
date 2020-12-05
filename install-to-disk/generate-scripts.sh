@@ -23,7 +23,9 @@ chmod +x $filename
 filename="$rootfs_mnt/generate-crypttab.sh"
 echo "Generating $filename"
 cat << EOF > $filename
-echo $crypt_dev_name $crypt_part none luks > /etc/crypttab
+# /etc/crypttab
+echo $crypt_dev_name $crypt_part none luks | tee /etc/crypttab
+echo "Done."
 EOF
 chmod +x $filename
 

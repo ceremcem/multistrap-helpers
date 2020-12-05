@@ -22,17 +22,20 @@ Usage:
 
     Possible disks:
 
-$(ls -l /dev/disk/by-id/ \
-    | grep "/sd.$" \
-    | grep -v 'wwn' \
-    | awk '{printf $9" "$10" "; system("readlink -f /dev/disk/by-id/"$11);}')
+$(sudo lsblk -f)
+
 $(losetup -a)
 
 EOL
 	exit 1
 fi
 
-disk_id=$(ls -l /dev/disk/by-id/ | grep "/$(basename $disk_device)$" | awk '{print $9}' | grep -v wwn)
+get_wwn_by_device(){
+  # usage: get_disk_wwn /dev/sdX
+  ls -l /dev/disk/by-id/ | grep "/$(basename $1)$" | awk '{print $9}' | grep -v wwn
+}
+
+disk_id=$(get_wwn_by_device $disk_device)
 
 if [[ -n $disk_id ]]; then
     echo "Disk WWN:"
@@ -43,6 +46,6 @@ fi
 
 echo "UUID information: "
 echo
-sudo blkid | grep $(basename $disk_device)
+sudo lsblk -f $disk_device
 
 [[ -n $file ]] && sudo kpartx -d $file

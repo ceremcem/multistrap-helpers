@@ -16,7 +16,7 @@ function echo_and_run {
 
 # Attach the disk
 # ----------------
-if [[ -n $image_file ]]; then
+if [[ -n ${image_file:-} ]]; then
 	[[ ! -f $image_file ]] && { echo "Can not find image file: $image_file"; exit 1; }
 	echo "Found image, associating relevant loopback devices:"
 	kpartx -av $image_file

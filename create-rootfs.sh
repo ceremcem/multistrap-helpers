@@ -1,24 +1,20 @@
 #!/bin/bash
 set -eu
 
-target=${1:-}
-if [[ -z $target ]]; then
+config=${1:-}
+if [[ -z $config ]]; then
 	echo "You should set the target suite:"
 	echo
-	echo "    $(basename $0) CODENAME"
-	echo
-	echo "Where the CODENAME might be one of the followings:"
-	echo
-	for codename in *-config; do
-		echo "    * ${codename%%-config}"
-	done
+	echo "    $(basename $0) release.config"
 	echo
 	exit 2
 fi
 
 [[ $(whoami) = "root" ]] || { sudo "$0" "$@"; exit 0; }
 
-target_dir=./$target-rootfs
+release=${config%.*} # remove the .config extension
+target_dir=./rootfs.$release
+echo "Creating rootfs for Debian $release in $target_dir"
 mkdir -p $target_dir
 if [ ! -z "$(ls -A $target_dir)" ]; then
 	echo "Remove the $target_dir or multistrap will fail."
@@ -33,7 +29,7 @@ if [ ! -z "$(ls -A $target_dir)" ]; then
 	if mountpoint $target_dir/dev > /dev/null; then
 		echo "ERROR: "
 		echo "ERROR: Seems to be chrooted to the target."
-		echo "ERROR: $target/dev shouldn't be a mountpoint"
+		echo "ERROR: $release/dev shouldn't be a mountpoint"
 		echo "ERROR: exiting."
 		echo "ERROR: "
 		exit
@@ -41,7 +37,7 @@ if [ ! -z "$(ls -A $target_dir)" ]; then
 		[[ -d $target_dir ]] && rm -rf $target_dir
 	fi
 fi
-multistrap -a amd64 -d $target_dir -f $target-config
+multistrap -a amd64 -d $target_dir -f $config
 
 echo "debian" > $target_dir/etc/hostname
 cp post-config.sh $target_dir/
