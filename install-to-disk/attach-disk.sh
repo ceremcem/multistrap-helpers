@@ -23,7 +23,9 @@ if [[ -n ${image_file:-} ]]; then
 fi
 
 mkdir -p "$root_mnt" "$rootfs_mnt"
-cryptsetup open $crypt_part $crypt_dev_name
+__use_key=
+[[ -n ${crypt_key:-} ]] && __use_key="--key-file=$crypt_key"
+cryptsetup open $crypt_part $crypt_dev_name $__use_key
 lvscan
 sleep 2
 
