@@ -17,6 +17,7 @@ cat << EOF > $filename
 boot_part_dev=\$(blkid | grep ${boot_part##UUID=} | cut -d: -f1)
 disk_device=\${boot_part_dev::-1}
 grub-install \$disk_device --boot-directory=/boot
+grub-mkconfig -o /boot/grub/grub.cfg
 EOF
 chmod +x $filename
 
