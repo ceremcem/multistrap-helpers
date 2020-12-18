@@ -28,6 +28,8 @@ while read dev; do
             lsof +f -- $device
             echo "TIP: Try to remount as 'ro' if necessary:"
             echo "mount -o remount,ro $device"
+            echo
+            echo "(see https://stackoverflow.com/a/58121313/1952991)"
         fi
 	fi
 	echo "deactivating $device"
