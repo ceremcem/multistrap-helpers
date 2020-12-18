@@ -20,12 +20,18 @@ echo_and_run umount $boot_part_dev || true
 echo_and_run umount $root_mnt || true
 echo_and_run umount $rootfs_mnt || true
 while read dev; do
+    device="/dev/mapper/$dev"
 	if [[ ! -z `cat /proc/mounts | grep "$dev"` ]]; then
 		echo "$dev seems to be mounted, unmounting first."
-		umount /dev/mapper/$dev
+		if ! umount $device; then
+            echo "Close the relevant processes:"
+            lsof +f -- $device
+            echo "TIP: Try to remount as 'ro' if necessary:"
+            echo "mount -o remount,ro $device"
+        fi
 	fi
-	echo "deactivating $dev"
-	lvchange -a n /dev/mapper/$dev
+	echo "deactivating $device"
+	lvchange -a n $device
 done < <(lvs --noheadings -o active,vg_name,lv_name | \
 	grep $lvm_name | \
  	awk '$1 == "active" {print $2"-"$3}')

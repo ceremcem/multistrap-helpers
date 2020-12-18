@@ -22,6 +22,11 @@ if [[ -n ${image_file:-} ]]; then
 	kpartx -av $image_file
 fi
 
+if mountpoint $root_mnt; then
+    echo "Seems already attached. Doing nothing."
+    exit 0
+fi
+
 mkdir -p "$root_mnt" "$rootfs_mnt"
 __use_key=
 [[ -n ${crypt_key:-} ]] && __use_key="--key-file=$crypt_key"
