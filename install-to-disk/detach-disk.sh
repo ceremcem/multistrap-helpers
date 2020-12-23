@@ -15,6 +15,10 @@ safe_source $config_file
 [[ $(whoami) = "root" ]] || { sudo "$0" "$@"; exit 0; }
 
 echo "Detaching ${lvm_name}..."
+if sudo btrfs scrub cancel $root_mnt 2> /dev/null; then
+    echo "Cancelling BTRFS scrub."
+fi
+
 boot_part_dev=$(blkid | grep ${boot_part##UUID=} | cut -d: -f1)
 echo_and_run umount $boot_part_dev || true
 echo_and_run umount $root_mnt || true
