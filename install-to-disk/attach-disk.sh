@@ -22,17 +22,19 @@ if [[ -n ${image_file:-} ]]; then
 	kpartx -av $image_file
 fi
 
-if mountpoint $root_mnt; then
+if mountpoint $root_mnt &> /dev/null; then
     echo "Seems already attached. Doing nothing."
     exit 0
 fi
+echo "Mounting $root_dev"
 
-mkdir -p "$root_mnt" "$rootfs_mnt"
 __use_key=
 [[ -n ${crypt_key:-} ]] && __use_key="--key-file=$crypt_key"
 cryptsetup open $crypt_part $crypt_dev_name $__use_key
 lvscan
 sleep 2
+
+mkdir -p "$root_mnt" "$rootfs_mnt"
 
 # in case of automount
 umount $boot_part 2> /dev/null || true
