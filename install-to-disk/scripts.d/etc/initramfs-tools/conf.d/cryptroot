@@ -1,2 +1,0 @@
-target={{crypt_dev_name}},source={{crypt_part}},rootdev,lvm={{root_lvm}},key=none
-target={{crypt_dev_name}},source={{crypt_part}},resumedev,lvm={{swap_lvm}},key=none
