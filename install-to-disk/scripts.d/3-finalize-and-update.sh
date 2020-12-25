@@ -1,5 +1,5 @@
 #!/bin/bash
-
+set -e
 # Add necessary packages for the disk layout:
 apt-get install btrfs-progs lvm2 cryptsetup
 

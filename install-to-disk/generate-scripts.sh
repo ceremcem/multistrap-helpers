@@ -89,16 +89,16 @@ done; set -- "${args_backup[@]}"
 # use ${args[@]} for new positional arguments  
 
 config_file=${arg1:-}
-[[ -f $config_file ]] \
-    || die "Configuration file is required." \
-    && config_file=$(realpath $config_file)
+[[ -n $config_file && -f $config_file ]] \
+    && config_file=$(realpath $config_file) \
+    || die "Configuration file is required." 
 . $config_file
 
 # Output directory
 if [[ "$outdir" == "--rootfs-mnt" ]]; then
     outdir=$rootfs_mnt
 else
-    outdir=$(realpath "$outdir")
+    [[ -n $outdir ]] && outdir=$(realpath "$outdir")
 fi
 echo "Outdir is set to: $outdir"
 [[ -d $outdir ]] || err "--outdir must be a directory."
