@@ -1,9 +1,10 @@
-# Creating Config File
+# 1. Create a config file
 
-copy config.sh-example and edit accordingly. Use `get-disk-tag.sh` to get partition
-UUID's of your disk. Then: 
+1. Name your installation (eg. "mysystem")
+2. Copy `./config-example.sh` as `config-mysystem.sh` and edit accordingly. You can use `get-disk-tag.sh` to get partition UUID's of your disk.
+3. (Optional, recommended) To prevent any possible mistakes, use `$c` variable instead of `./config-mysystem.sh`:
 
-        export c="./config-foo.sh"
+        export c="./config-mysystem.sh"
 
 # Creating Bootable System
 
