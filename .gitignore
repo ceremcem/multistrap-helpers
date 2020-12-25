@@ -1,4 +1,5 @@
 *-rootfs*/
 config*.sh
+!config-example.sh
 *.swp
 *.vmdk

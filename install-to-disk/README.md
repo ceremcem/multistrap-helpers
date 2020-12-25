@@ -37,34 +37,16 @@ Either use a real disk or a disk image to test your installation on VirtualBox.
 		
 		./attach-disk.sh $c
 		./rsync-to-disk.sh $c my-rootfs/
-		./generate-scripts.sh $c                                      # generate the required scripts for booting
+		./generate-scripts.sh $c -o --rootfs-mnt                      # generate the required scripts for booting
 		echo "new-hostname" | sudo tee /path/to/rootfs/etc/hostname   # only if necessary 
 		./chroot-to-disk.sh $c                                        # displays host's hostname, that's OK
 		
-		# From this point on, those commands are intended to run 
-		# inside the chroot environment: 
+		# Run within the chroot environment: 
 		# -------------------------------------------------------
-		/make-bootable-rootfs.sh	# continue without selecting a disk in Grub2 install
-		/install-grub.sh	
-		/generate-crypttab.sh
-		
-		# Add necessary packages for the disk layout:
-		apt-get install btrfs-progs lvm2 cryptsetup
+		/1-make-bootable-rootfs.sh	# continue without selecting a disk in Grub2 install
+		/2-install-grub.sh	
+		/3-finalize-and-update.sh  	# If you encounter complaints about missing firmware, refer to (NOT VERIFIED): https://askubuntu.com/a/1240434/371730
 
-		# Apply the following changes manually:
-		#		
-		# 1. For LUKS partition: 
-		#
-		#     1. Set "CRYPTSETUP=y" in /etc/cryptsetup-initramfs/conf-hook
-		#
-		# 2. THIS STEP SHOULDN'T BE NEEDED:  cat /etc/initramfs-tools/conf.d/cryptroot 
-		#
-		#	   target=masa_crypt,source=UUID=d8ede8f6-a295-401a-93d8-8f5e3d3f3f2e,rootdev,lvm=masa-root,key=none
-		#	   target=masa_crypt,source=UUID=d8ede8f6-a295-401a-93d8-8f5e3d3f3f2e,resumedev,lvm=masa-swap,key=none
-		#
-
-		update-initramfs -u -k all
-		update-grub
 		exit  # from chroot environment		
 		# -------------------------------------------------------
 

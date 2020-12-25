@@ -12,18 +12,13 @@ apt-get install linux-image-amd64 \
 	grub2 \
 	systemd \
 	initramfs-tools \
-	kbd
+	kbd \
+    crudini
 [[ -e /sbin/init ]] || ln -s /lib/systemd/systemd /sbin/init
 
 # edit initramfs.conf to change KEYMAP=y
-CONFIG_FILE=/etc/initramfs-tools/initramfs.conf
-KEY="KEYMAP"
-VALUE="y"
-sed -i "s/^\($KEY\s*=\s*\).*\$/\1$VALUE/" $CONFIG_FILE
+crudini --set --inplace /etc/initramfs-tools/initramfs.conf '' KEYMAP y
 
 # Prevent "root account is locked" error:
 echo "Create a password for your root account:"
 passwd
-
-update-initramfs -u
-echo "Done."
