@@ -1,26 +1,17 @@
 # 1. Create a config file
 
 1. Name your installation (eg. "mysystem")
-2. Copy `./config-example.sh` as `config-mysystem.sh` and edit accordingly. You can use `get-disk-tag.sh` to get partition UUID's of your disk.
-3. (Optional, recommended) To prevent any possible mistakes, use `$c` variable instead of `./config-mysystem.sh`:
+2. Copy `./config-example.sh` as `config-mysystem.sh` and edit accordingly.
+3. First, assign the `wwn=` variable by using `./get-disk-info.sh` (and then `./get-disk-info.sh /dev/sdX`). 
+4. Give a name to your LVM volumes by setting `lvm_name=` variable. This is usually the same as your installation name (eg. mysystem).
+5. Do not set any other variables at this point. Further instructions will be clarified within the next steps.
 
-        export c="./config-mysystem.sh"
+> Optional: To prevent any possible mistakes, use `$c` variable instead of `./config-mysystem.sh`:
+>
+>        export c="./config-mysystem.sh"
 
-# Creating Bootable System
 
-Either use a real disk or a disk image to test your installation on VirtualBox. 
-
-"_DISK_" is either "disk.img" or "/dev/sdX" where sdX is your target drive.
-
-# FIXME: Create a disk image (if necessary)
-
-> NOTE: There is currently a bug with using disk image. 
-> We can not install GRUB to the image. Rest of the scripts
-> work just well, like creating, partitioning, attaching and detaching. 
-
-1. `./create-disk-image $c`
-
-# Install to Physical Disk
+# 2. Install to the Physical Disk
 
 1. Create the designed partition layout:
 
@@ -30,33 +21,43 @@ Either use a real disk or a disk image to test your installation on VirtualBox.
 
 		boot partition: _DISK_1
 		luks partition: _DISK_2
-		lvm on _DISK_2:
-			/dev/mapper/${lvm_name}-root
-			/dev/mapper/${lvm_name}-swap
+			lvm:
+				/dev/mapper/${lvm_name}-root
+				/dev/mapper/${lvm_name}-swap
+			
+			
+2. Use `./get-disk-info.sh /dev/sdX` to assign `boot_part` and `crypt_part` variables in `./config-mysystem.sh`.
 		
-2. Send files to remote disk, install Grub2, configure LUKS:
+3. Send `../rootfs.buster` to the target disk and make it bootable:
 		
 		./attach-disk.sh $c
-		./rsync-to-disk.sh $c my-rootfs/
+		./rsync-to-disk.sh $c ../rootfs.buster/			      # notice the / character at the end
 		./generate-scripts.sh $c -o --rootfs-mnt                      # generate the required scripts for booting
 		echo "new-hostname" | sudo tee /path/to/rootfs/etc/hostname   # only if necessary 
-		./chroot-to-disk.sh $c                                        # displays host's hostname, that's OK
+		./chroot-to-disk.sh $c                                        # NOTE: displays host's hostname, that's OK
 		
 		# Run within the chroot environment: 
 		# -------------------------------------------------------
-		/1-make-bootable-rootfs.sh	# continue without selecting a disk in Grub2 install
+		
+		# Note: Consider enabling backports according to your `Release`. (see: https://backports.debian.org/Instructions/)
+		
+		# ATTENTION: Continue WITHOUT selecting a disk in Grub2 install
+		# Don't select any disk or partition and press "Enter"
+		# Say "Yes" to "Continue without installing GRUB?" question
+		/1-make-bootable-rootfs.sh
+		
 		/2-install-grub.sh	
 		/3-finalize-and-update.sh  	# If you encounter complaints about missing firmware, refer to (NOT VERIFIED): https://askubuntu.com/a/1240434/371730
-
 		exit  # from chroot environment		
+
 		# -------------------------------------------------------
 
 		# From within the host
-		./detach.sh $c
+		./detach-disk.sh $c
 
 
 # Test by using VirtualBox 
 
-1. `./create-vmdk-for _DISK_` # Messages will assist you in the process
+1. `./create-vmdk-for` # Messages will assist you in the process
 2. Open VirtualBox, make appropriate changes (like writethrough, as stated in 1th step)
 3. Start the VM.
