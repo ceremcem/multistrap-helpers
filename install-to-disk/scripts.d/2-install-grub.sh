@@ -9,6 +9,6 @@ fi
 
 boot_part="{{boot_part}}"
 disk_device=$(lsblk -no pkname /dev/disk/by-uuid/${boot_part##UUID=})
-grub-install $disk_device --boot-directory=/boot
+grub-install /dev/$disk_device --boot-directory=/boot
 grub-mkconfig -o /boot/grub/grub.cfg
 
