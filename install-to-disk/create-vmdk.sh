@@ -3,7 +3,12 @@ set -eu
 
 safe_source () { [[ ! -z ${1:-} ]] && source $1; _dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"; _sdir=$(dirname "$(readlink -f "$0")"); }; safe_source
 
-if [[ -b ${1:-} ]]; then
+if [[ "$1" == "-c" ]]; then 
+	source $2
+	disk_id=$wwn 
+	disk_path="/dev/disk/by-id/$disk_id"
+	vmdk_name="$disk_id.vmdk"
+elif [[ -b ${1:-} ]]; then
 	device=$(readlink -f $1)
 	disk_id=$(ls -l /dev/disk/by-id/ | grep "/$(basename $device)$" | awk '{print $9}' | grep -v wwn)
 	disk_path="/dev/disk/by-id/$disk_id"
@@ -20,6 +25,7 @@ elif [[ -f ${1:-} ]]; then
 	echo
 else
 	echo
+	echo "Usage: $(basename $0) -c path/to/config.sh"
 	echo "Usage: $(basename $0) /dev/sdX"
 	echo "Usage: $(basename $0) /dev/disk/by-id/disk-wwn"
 	echo "Usage: $(basename $0) /path/to/disk.img"
@@ -28,7 +34,7 @@ else
 fi
 
 [[ $(whoami) = "root" ]] || { sudo "$0" "$@"; exit 0; }
-echo "Device: ${device:-$file}, Disk id: ${disk_id:-$lo_device}"
+echo "Device: ${disk_path:-$file}, Disk id: ${disk_id:-$lo_device}"
 
 # Taken from: https://superuser.com/a/756731/187576
 _device=${disk_path:-$lo_device}
@@ -41,18 +47,18 @@ VBoxManage internalcommands createrawvmdk \
 chown $SUDO_USER:$SUDO_USER "$_sdir/$vmdk_name"
 cat << EOF
 
-IMPORTANT: Set To Write-Through
-------------
-
-Do not forget to change the mode to "Writethrough"
-in the settings before creating the VM:
+1. Change .vmdk type to "Write-Through":
 
 	File -> Virtual Media Manager
-        -> $vmdk_name -> [modify]
+		-> add
+        -> $vmdk_name -> [Attributes]
             -> Type: Writethrough
 
-Also double check that you have r/w permissions
-to the $_device file.
+2. Ensure that you have r/w permissions to the $_device file: 
+
+	$(ls -l $_device)
+
+3. Create your virtual machine by using $vmdk_name. 
 EOF
 
 echo "All done."
