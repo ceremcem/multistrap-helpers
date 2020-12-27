@@ -1,3 +1,3 @@
 [submodule "install-to-disk/bash-templater"]
 	path = install-to-disk/bash-templater
-	url = https://github.com/johanhaleby/bash-templater
+	url = https://github.com/ceremcem/bash-templater
