@@ -9,8 +9,8 @@ lvm_name="mysystem"
 # Assign below variables *after* partitioning the disk
 # (format-btrfs-swap-lvm-luks.sh... step)
 # use ./get-disk-info.sh /dev/sdX again to identify the UUID's:
-boot_part='UUID=...'
-crypt_part='UUID=....'
+boot_part='UUID=1234'
+crypt_part='UUID=5678'
 
 # you probably won't need to change those:
 crypt_dev_name=${lvm_name}_crypt
