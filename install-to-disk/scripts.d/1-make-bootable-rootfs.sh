@@ -18,6 +18,7 @@ apt-get install linux-image-amd64 \
 
 # edit initramfs.conf to change KEYMAP=y
 crudini --set --inplace /etc/initramfs-tools/initramfs.conf '' KEYMAP y
+sed -i -r "s/(\S*)\s*=\s*(.*)/\1=\2/g" /etc/initramfs-tools/initramfs.conf
 
 # Prevent "root account is locked" error:
 echo "Create a password for your root account:"
