@@ -33,7 +33,7 @@ else
 	exit 1
 fi
 
-[[ $(whoami) = "root" ]] || { sudo "$0" "$@"; exit 0; }
+#[[ $(whoami) = "root" ]] || { sudo "$0" "$@"; exit 0; }
 echo "Device: ${disk_path:-$file}, Disk id: ${disk_id:-$lo_device}"
 
 # Taken from: https://superuser.com/a/756731/187576
@@ -44,7 +44,7 @@ VBoxManage internalcommands createrawvmdk \
     -filename $_sdir/$vmdk_name \
     -rawdisk ${_device}
 
-chown $SUDO_USER:$SUDO_USER "$_sdir/$vmdk_name"
+#chown $SUDO_USER:$SUDO_USER "$_sdir/$vmdk_name"
 cat << EOF
 
 1. Change .vmdk type to "Write-Through":
