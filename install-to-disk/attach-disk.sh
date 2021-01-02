@@ -34,7 +34,7 @@ cryptsetup open $crypt_part $crypt_dev_name $__use_key
 lvscan
 sleep 2
 
-mkdir -p "$root_mnt" "$rootfs_mnt"
+mkdir -p "$root_mnt"
 
 # in case of automount
 umount $boot_part 2> /dev/null || true
@@ -57,13 +57,4 @@ EOL
 fi
 set -e
 
-if [[ ! -d $root_mnt/$subvol ]]; then
-	echo "$root_mnt/$subvol is required, automatically creating."
-	btrfs sub create $root_mnt/$subvol
-fi
-mount -t btrfs -o subvol=$subvol $root_dev $rootfs_mnt
-
-# mount boot partition
-mkdir -p $rootfs_mnt/boot
-mount $boot_part $rootfs_mnt/boot
-
+# All done. 

@@ -21,8 +21,9 @@ show_help(){
     $(basename $0) [options] /path/to/config-file
 
     Options:
-        -o, --outdir   : Output directory instead of (--rootfs-mnt alias can be passed 
-            to use \$rootfs_mnt variable within the configuration. 
+        -o, --outdir   : Output directory instead of 
+                        (--rootfs alias can be passed to use \$root_mnt/\$subvol 
+                        path obtained from the configuration file.) 
         --backup       : Backup existing file in case of a conflict (default: throw error)
         --update       : Overwrite existing file in case of a conflict (default: throw error)
 
@@ -95,14 +96,14 @@ config_file=${arg1:-}
 . $config_file
 
 # Output directory
-if [[ "$outdir" == "--rootfs-mnt" ]]; then
-    outdir=$rootfs_mnt
+if [[ "$outdir" == "--rootfs" ]]; then
+    outdir="$root_mnt/$subvol"
 else
     [[ -n $outdir ]] && outdir=$(realpath "$outdir")
 fi
 echo "Outdir is set to: $outdir"
 [[ -d $outdir ]] || err "--outdir must be a directory."
-[[ -w $outdir ]] || err "Output directory ($outdir) is not writable."
+[[ -w $outdir ]] || err "Output directory ($outdir) is not writable. (Do we have correct permissions?)"
 
 TEMPLATER="$_sdir/bash-templater/templater.sh"
 _ext=".$(timestamp).bak" # backup extension

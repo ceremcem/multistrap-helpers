@@ -10,7 +10,7 @@ show_usage(){
 
         $(basename $0) path/to/config.sh path/to/source-dir
 
-    TARGET_DIR will be obtained from config file, by \$rootfs_mnt variable.
+    TARGET_DIR will be obtained from config file, by \$root_mnt/\$subvol variable.
 
 EOL
 }
@@ -22,8 +22,12 @@ safe_source $config_file
 src="${2:-}"
 [[ -n $src ]] || { echo "Missing source directory"; show_usage; exit 1; }
 
+dest=$root_mnt/$subvol
+[[ -d $dest ]] || { echo "Missing destination directory, please create it first."; exit 1; }
+
 [[ $(whoami) = "root" ]] || { sudo "$0" "$@"; exit 0; }
-echo "Target dir is: $rootfs_mnt"
+
+echo "Target dir is: $dest"
 sleep 1
-rsync -avP --delete $src/ $rootfs_mnt
+rsync -avP --delete $src/ $dest/
 
