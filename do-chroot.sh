@@ -41,11 +41,11 @@ mount --bind /run $1/run
 
 chroot $1 /bin/bash $cmd
 
+umount $1/run
 umount $1/dev/pts
 umount $1/dev
 umount $1/sys
 umount $1/proc || umount -lf $1/proc
-umount $1/run
 
 rm $1/var/lib/dbus/machine-id 2> /dev/null
 
