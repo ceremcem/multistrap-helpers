@@ -39,12 +39,14 @@ done < <(lvs --noheadings -o active,vg_name,lv_name | \
 	grep $lvm_name | \
  	awk '$1 == "active" {print $2"-"$3}')
 
+echo "Closing $crypt_dev_name"
 cryptsetup close $crypt_dev_name || true
 
+echo "Removing $root_mnt directory"
 rmdir "$root_mnt" 2> /dev/null || true
 
 if [[ -n ${image_file:-} ]]; then
         echo "Removing relevant loopback devices:"
         kpartx -dv $image_file
 fi
-echo "Done."
+echo "$lvm_name is detached."

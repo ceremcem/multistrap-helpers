@@ -31,8 +31,9 @@ echo "Mounting $root_dev"
 __use_key=
 [[ -n ${crypt_key:-} ]] && __use_key="--key-file=$crypt_key"
 cryptsetup open $crypt_part $crypt_dev_name $__use_key
-lvscan
-sleep 2
+while sleep 1; do 
+  lvscan | grep ACTIVE | grep $lvm_name && break
+done
 
 mkdir -p "$root_mnt"
 
@@ -57,4 +58,5 @@ EOL
 fi
 set -e
 
+echo "$lvm_name is attached. ($root_mnt)"
 # All done. 
