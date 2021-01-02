@@ -16,9 +16,21 @@ apt-get install linux-image-amd64 \
     crudini
 [[ -e /sbin/init ]] || ln -s /lib/systemd/systemd /sbin/init
 
+update_cfg(){
+    local file=$1
+    local key=$2
+    local value=$3
+    crudini --set --inplace $file '' $key $value
+    # workaround, see https://github.com/ceremcem/multistrap-helpers/issues/15
+    sed -i -r "s/(\S*)\s*=\s*(.*)/\1=\2/g" $file 
+}
+
 # edit initramfs.conf to change KEYMAP=y
-crudini --set --inplace /etc/initramfs-tools/initramfs.conf '' KEYMAP y
-sed -i -r "s/(\S*)\s*=\s*(.*)/\1=\2/g" /etc/initramfs-tools/initramfs.conf
+update_cfg /etc/initramfs-tools/initramfs.conf KEYMAP y
+
+# For cryptsetup installations
+apt-get install btrfs-progs lvm2 cryptsetup
+update_cfg /etc/cryptsetup-initramfs/conf-hook CRYPTSETUP y
 
 # Prevent "root account is locked" error:
 echo "Create a password for your root account:"
