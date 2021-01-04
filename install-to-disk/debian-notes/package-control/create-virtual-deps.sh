@@ -77,6 +77,12 @@ cd $_sdir
 package_name="$name-deps"
 deb_file="${package_name}_${version}_all.deb"
 
+installed="$(dpkg-query --show $package_name | awk '{print $2}')"
+if [[ -n "$installed" ]]; then 
+    echo "INFO: Currently installed version of $package_name: $installed"
+else 
+    echo "INFO: There is no package installed on the system named $package_name"
+fi
 [[ -f $deb_file ]] && die "$deb_file file exists."
 
 # Following template can be created by `equivs-control my.control` command:
