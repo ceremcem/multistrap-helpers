@@ -10,17 +10,26 @@ show_help(){
 HELP
 }
 
-die(){
+die_help(){
     echo
-    echo "$1"
+    echo "ERROR: $@"
+    echo
     show_help
     exit 1
+}
+
+die(){
+    echo
+    echo "ERROR: $@"
+    echo
+    exit 2
 }
 
 # Parse command line arguments
 # ---------------------------
 # Initialize parameters
 name=
+version="1.0"
 # ---------------------------
 args_backup=("$@")
 args=()
@@ -36,9 +45,13 @@ while :; do
         --name|--for) shift
             name="${1:-}"
             ;;
+        --version) shift
+            [[ -z ${1:-} ]] && die "Provide version information."
+            version="$1"
+            ;;
         # --------------------------------------------------------
         -*) # Handle unrecognized options
-            die "Unknown option: $1"
+            die_help "Unknown option: $1"
             ;;
         *)  # Generate the new positional arguments: $arg1, $arg2, ... and ${args[@]}
             if [[ ! -z ${1:-} ]]; then
@@ -60,7 +73,11 @@ deps=("${args[@]}")
 
 function join_by { local IFS="$1"; shift; echo "$*"; }
 
+cd $_sdir
 package_name="$name-deps"
+deb_file="${package_name}_${version}_all.deb"
+
+[[ -f $deb_file ]] && die "$deb_file file exists."
 
 # Following template can be created by `equivs-control my.control` command:
 control=`cat<<EOL
@@ -73,7 +90,7 @@ Priority: optional
 Standards-Version: 3.9.2
 
 Package: $package_name
-#Version: 1.0
+Version: $version
 # Maintainer: Your Name <yourname@example.com>
 # Pre-Depends: <comma-separated list of packages>
 Depends: $(join_by , "${deps[@]}")
@@ -100,5 +117,5 @@ equivs-build <( echo "$control" )
 echo
 echo "Use the following command to install this package:"
 echo
-echo "    sudo apt install ./${package_name}_1.0_all.deb"
+echo "    sudo apt install ./$deb_file"
 echo
