@@ -26,7 +26,7 @@ mount $root_dev $tmp -o rw,subvol=$subvol,noatime
 echo "Mounting \$boot_part to $tmp/boot"
 mount $boot_part $tmp/boot
 $_sdir/../do-chroot.sh $tmp "$args"
-set +x
+set -x
 umount $tmp/boot
 umount $tmp
 rmdir $tmp
