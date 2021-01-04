@@ -83,8 +83,12 @@ if [[ -n "$installed" ]]; then
 else 
     echo "INFO: There is no package installed on the system named $package_name"
 fi
-[[ -f $deb_file ]] && die "$deb_file file exists."
-
+if [[ -f $deb_file ]]; then
+    echo "INFO: Properties of existing $deb_file:"
+    dpkg-deb --info $deb_file
+    echo
+    die "$deb_file file exists."
+fi
 # Following template can be created by `equivs-control my.control` command:
 control=`cat<<EOL
 ### Commented entries have reasonable defaults.
