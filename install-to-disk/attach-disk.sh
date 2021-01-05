@@ -26,7 +26,6 @@ if mountpoint $root_mnt &> /dev/null; then
     echo "Seems already attached. Doing nothing."
     exit 0
 fi
-echo "Mounting $root_dev"
 
 __use_key=
 [[ -n ${crypt_key:-} ]] && __use_key="--key-file=$crypt_key"
@@ -42,7 +41,8 @@ umount $boot_part 2> /dev/null || true
 umount $root_dev 2> /dev/null || true
 
 set +e
-mount $root_dev $root_mnt # for subvolume operations
+echo "Mounting $root_dev"
+mount $root_dev $root_mnt -o noatime
 if [[ $? -ne 0 ]]; then
     cat << EOL
 
@@ -51,7 +51,7 @@ configuration and the failure is because of a missing device,
 you may try to mount the partition Readonly by the following
 command:
 
-	mount -t btrfs -o ro,degraded $root_dev $root_mnt
+	mount -t btrfs -o ro,degraded,noatime $root_dev $root_mnt
 
 EOL
     exit
