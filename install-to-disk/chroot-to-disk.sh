@@ -9,8 +9,8 @@ die(){
 
 config_file=${1:-}
 [[ ! -f $config_file ]] && { echo "Usage: $(basename $0) path/to/config-file"; exit 1; }
-cd "$(dirname "$config_file")"
-safe_source $config_file
+cd "$(dirname $(realpath "$config_file"))"
+source $config_file
 
 [[ $(whoami) = "root" ]] || die "This script must be run as root."
 
