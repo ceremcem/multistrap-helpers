@@ -15,6 +15,7 @@ lvm_open_count(){
 
 config_file=${1:-}
 [[ ! -f $config_file ]] && { echo "Usage: $(basename $0) path/to/config-file"; exit 1; }
+cd "$(dirname "$config_file")"
 safe_source $config_file
 
 [[ $(whoami) = "root" ]] || { sudo "$0" "$@"; exit 0; }
