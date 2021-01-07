@@ -103,6 +103,7 @@ done; set -- "${args_backup[@]}"
 
 config_file=${arg1:-}
 [[ -f $config_file ]] || die "Config file not found."
+cd "$(dirname "$config_file")"
 safe_source $config_file
 
 [[ $use_disk == "undefined" ]] && \

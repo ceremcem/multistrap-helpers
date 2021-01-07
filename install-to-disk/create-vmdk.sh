@@ -4,7 +4,9 @@ set -eu
 safe_source () { [[ ! -z ${1:-} ]] && source $1; _dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"; _sdir=$(dirname "$(readlink -f "$0")"); }; safe_source
 
 if [[ "$1" == "-c" ]]; then 
-	source $2
+	config=$2
+	cd "$(dirname "$config")"
+	source $config
 	disk_id=$wwn 
 	disk_path="/dev/disk/by-id/$disk_id"
 	vmdk_name="$disk_id.vmdk"

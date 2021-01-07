@@ -17,6 +17,7 @@ EOL
 
 config_file=${1:-}
 [[ ! -f $config_file ]] && { echo "Missing config file"; show_usage; exit 1; }
+cd "$(dirname "$config_file")"
 safe_source $config_file
 
 src="${2:-}"

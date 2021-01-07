@@ -93,6 +93,8 @@ config_file=${arg1:-}
 [[ -n $config_file && -f $config_file ]] \
     && config_file=$(realpath $config_file) \
     || die "Configuration file is required." 
+
+cd "$(dirname "$config_file")"
 . $config_file
 
 # Output directory
