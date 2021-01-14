@@ -73,8 +73,7 @@ deps=("${args[@]}")
 
 function join_by { local IFS="$1"; shift; echo "$*"; }
 
-cd $_sdir
-package_name="$name-deps"
+package_name="$name"
 deb_file="${package_name}_${version}_all.deb"
 
 installed="$(dpkg-query --show $package_name | awk '{print $2}')"
@@ -118,7 +117,7 @@ Depends: $(join_by , "${deps[@]}")
 # Files: <pair of space-separated paths; First is file to include, second is destination>
 #  <more pairs, if there's more than one file to include. Notice the starting space>
 Description:
- A virtual package that declares $name dependencies. 
+ A virtual package that declares ${name%-deps} dependencies. 
 EOL
 `
 
