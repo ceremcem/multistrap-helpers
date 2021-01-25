@@ -110,7 +110,7 @@ safe_source $config_file
   die "Explicitly declare: --use-existing-layout or --format-entire-disk."
 
 [[ -n ${wwn:-} ]] && [[ -n ${image_file:-} ]] && \
-    die "Either \$wwn or \$image_file should be set in $config_file."
+    die "Confusion: You should set either \$wwn or \$image_file variable, not both."
 
 [[ -z $lvm_name ]] && \
     die "\$lvm_name variable should be set in $config_file."
@@ -153,7 +153,7 @@ else
 fi
 
 [[ "$use_disk" == "format-entire-disk" ]] && \
-  if ! prompt_yes_no "Entire disk ($wwn) will be formatted. Proceed?"; then
+  if ! prompt_yes_no "Entire disk (${wwn:-$image_file}) will be formatted. Proceed?"; then
     echo "Nothing done."
     exit 1
   fi 
@@ -200,6 +200,9 @@ D_DEVICE=${ROOT_NAME}_crypt
 SWAP_PART="/dev/mapper/${ROOT_NAME}-swap"
 ROOT_PART="/dev/mapper/${ROOT_NAME}-root"
 
+# Create appropriate devmappings
+[[ -n ${image_file:-} ]] && kpartx -av "$image_file"
+
 # Double check that we created partitions.
 [[ -b $partt1 ]] || \
     die "Something went wrong, there should be a $partt1 device."
@@ -232,7 +235,8 @@ info "Closing devices."
 lvchange -a n $ROOT_PART
 lvchange -a n $SWAP_PART
 cryptsetup close $D_DEVICE
-[[ -f $file ]] && kpartx -dv $file
 
 info "Dump a overall result"
 lsblk -f $DEVICE
+
+[[ -f $file ]] && kpartx -dv $file
