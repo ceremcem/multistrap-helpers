@@ -20,14 +20,14 @@
 
   This will create the following layout:
 
-		boot partition: _DISK_1
-		luks partition: _DISK_2
+		boot partition
+		luks partition:
 			lvm:
 				/dev/mapper/${lvm_name}-root
 				/dev/mapper/${lvm_name}-swap
 			
 			
-2. Use the given information in the previous step (or get by `./get-disk-info.sh /dev/sdX`) to assign `boot_part` and `crypt_part` variables in `./config-mysystem.sh`.
+2. Use the given information in the previous step (or manually get by `./get-disk-info.sh /dev/sdX`) to assign `boot_part` and `crypt_part` variables in `./config-mysystem.sh`.
 		
 3. Send `../rootfs.buster` to the target disk and make it bootable:
 		
