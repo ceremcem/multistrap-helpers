@@ -7,7 +7,7 @@ Ensure that your /etc/apt/sources.list[.d/*] files have the same `release` alias
 
 * https://unix.stackexchange.com/a/445689/65781
 
-    sudo apt-get install firmware-linux-nonfree 
+      sudo apt-get install firmware-linux-nonfree 
 
 * Install any further firmware from kernel.org/.../linux-firmware.git:
 
