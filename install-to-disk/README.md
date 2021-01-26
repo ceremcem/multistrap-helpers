@@ -2,7 +2,7 @@
 
 1. Name your installation (eg. "mysystem")
 2. Copy `./config-example.sh` as `config-mysystem.sh` and edit accordingly.
-3. First, assign the `wwn=` variable by using `./get-disk-info.sh` (and then `./get-disk-info.sh /dev/sdX`). 
+3. First, assign the `wwn=` variable by using `./get-disk-info.sh` (and then `./get-disk-info.sh /dev/sdX`). (You may also `create-disk-image.sh` and set `image_file=` variable to continue with the image file.)
 4. Give a name to your LVM volumes by setting `lvm_name=` variable. This is usually the same as your installation name (eg. mysystem).
 5. Do not set any other variables at this point. Further instructions will be clarified within the next steps.
 
@@ -32,10 +32,11 @@
 3. Send `../rootfs.buster` to the target disk and make it bootable:
 		
 		./attach-disk.sh $c
+		./create-rootfs-subvol.sh $c
 		./rsync-to-disk.sh $c ../rootfs.buster/			      		  # notice the / character at the end
-		./generate-scripts.sh $c -o --rootfs-mnt                      # generate the required scripts for booting
+		sudo ./generate-scripts.sh $c -o --rootfs                     # generate the required scripts for booting
 		echo "new-hostname" | sudo tee /path/to/rootfs/etc/hostname   # only if necessary 
-		./chroot-to-disk.sh $c                                        # NOTE: displays host's hostname, that's OK
+		sudo ./chroot-to-disk.sh $c                                        # NOTE: still displays HOST's hostname, but that's OK
 		
 		# Run within the chroot environment: 
 		# -------------------------------------------------------
@@ -63,5 +64,5 @@
 # Test by using VirtualBox 
 
 1. `./create-vmdk.sh -c $c` # Messages will assist you in the process
-2. Open VirtualBox, make appropriate changes (like writethrough, as stated in 1th step)
+2. Open VirtualBox, make appropriate changes (like writethrough, as stated in 1st step)
 3. Start the VM.

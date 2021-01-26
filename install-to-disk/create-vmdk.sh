@@ -3,43 +3,42 @@ set -eu
 
 safe_source () { [[ ! -z ${1:-} ]] && source $1; _dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"; _sdir=$(dirname "$(readlink -f "$0")"); }; safe_source
 
-if [[ "$1" == "-c" ]]; then 
+if [[ "${1:-}" == "-c" ]]; then 
 	config=$2
 	cd "$(dirname "$config")"
 	source $config
-	disk_id=$wwn 
-	disk_path="/dev/disk/by-id/$disk_id"
-	vmdk_name="$disk_id.vmdk"
-elif [[ -b ${1:-} ]]; then
+	[[ -n ${wwn:-} ]] && { $0 "--disk" $wwn; exit 0; }
+	[[ -n ${image_file:-} ]] && { $0 "--file" $image_file; exit 0; }
+	echo "Something went wrong. You should set \$wwn or \$image_file."
+	exit 1
+fi
+
+# hack for first arguments
+shift 
+
+if [[ -b ${1:-} ]]; then
 	device=$(readlink -f $1)
 	disk_id=$(ls -l /dev/disk/by-id/ | grep "/$(basename $device)$" | awk '{print $9}' | grep -v wwn)
 	disk_path="/dev/disk/by-id/$disk_id"
 	vmdk_name="$disk_id.vmdk"
 elif [[ -f ${1:-} ]]; then
 	file=$1
-	lo_device=${2:-}
-	[[ -z $lo_device ]] && { echo "Loopback device name is required"; exit 3; }
-	vmdk_name="$(basename $file)-$(basename $lo_device).vmdk"
-	echo
-	echo "Don't forget to associate with the loopback device:"
-	echo
-	echo "       losetup $lo_device $file"
-	echo
+	vmdk_name="$(basename $file).vmdk"
 else
 	echo
 	echo "Usage: $(basename $0) -c path/to/config.sh"
-	echo "Usage: $(basename $0) /dev/sdX"
-	echo "Usage: $(basename $0) /dev/disk/by-id/disk-wwn"
-	echo "Usage: $(basename $0) /path/to/disk.img"
+	echo "Usage: $(basename $0) --disk /dev/sdX"
+	echo "Usage: $(basename $0) --disk /dev/disk/by-id/disk-wwn"
+	echo "Usage: $(basename $0) --file /path/to/disk.img"
 	echo
 	exit 1
 fi
 
 #[[ $(whoami) = "root" ]] || { sudo "$0" "$@"; exit 0; }
-echo "Device: ${disk_path:-$file}, Disk id: ${disk_id:-$lo_device}"
+echo "Device: ${disk_path:-$file}, Disk id: ${disk_id:-$file}"
 
 # Taken from: https://superuser.com/a/756731/187576
-_device=${disk_path:-$lo_device}
+_device=${disk_path:-$(realpath $file)}
 vmdk_name="virtualbox-$vmdk_name"
 echo "Creating vmdk for ${_device}"
 VBoxManage internalcommands createrawvmdk \

@@ -9,5 +9,9 @@ safe_source $config_file
 [[ -z $image_file ]] && { echo "Define image_file='path/to/disk.img' in your config."; exit 1; }
 [[ -e $image_file ]] && { echo "ERROR: $image_file already exists."; exit 1; }
 
-size=35600
-dd if=/dev/zero of="$image_file" bs=1024k seek=$size count=0
+# Causes fragmentation:
+#dd if=/dev/zero of="$image_file" bs=1024k seek=35600 count=0
+
+# Creates file without causing fragmentation:
+fallocate -l 35G "$image_file"
+#truncate -s 35G "$image_file"

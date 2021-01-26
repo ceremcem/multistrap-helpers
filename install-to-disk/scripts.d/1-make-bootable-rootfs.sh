@@ -8,7 +8,7 @@ else
 fi
 
 apt-get update
-apt-get install linux-image-amd64 \
+apt-get install -y linux-image-amd64 \
 	grub2 \
 	systemd \
 	initramfs-tools \
@@ -29,7 +29,7 @@ update_cfg(){
 update_cfg /etc/initramfs-tools/initramfs.conf KEYMAP y
 
 # For cryptsetup installations
-apt-get install btrfs-progs lvm2 cryptsetup
+apt-get install -y btrfs-progs lvm2 cryptsetup
 update_cfg /etc/cryptsetup-initramfs/conf-hook CRYPTSETUP y
 
 # Prevent "root account is locked" error:
