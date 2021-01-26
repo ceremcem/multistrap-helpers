@@ -38,7 +38,7 @@ fi
 echo "Device: ${disk_path:-$file}, Disk id: ${disk_id:-$file}"
 
 # Taken from: https://superuser.com/a/756731/187576
-_device=${disk_path:-$(realpath $file)}
+_device=${disk_path:-$file}
 vmdk_name="virtualbox-$vmdk_name"
 echo "Creating vmdk for ${_device}"
 VBoxManage internalcommands createrawvmdk \
