@@ -10,6 +10,7 @@ config_file=${1:-}
 . $config_file
 
 dest=$root_mnt/$subvol
-[[ -d $dest ]] \
-    && { echo "$dest already exists."; exit 1; } \
-    || { sudo btrfs sub create "$dest"; }
+
+hostname=${2:-$lvm_name}
+set -x 
+echo $hostname | sudo tee "$dest/etc/hostname"

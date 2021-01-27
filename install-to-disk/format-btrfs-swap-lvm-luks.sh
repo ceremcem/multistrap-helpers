@@ -102,9 +102,12 @@ done; set -- "${args_backup[@]}"
 # use ${args[@]} for new positional arguments  
 
 config_file=${arg1:-}
-[[ -f $config_file ]] || die "Config file not found."
+[[ -n $config_file && -f $config_file ]] \
+    && config_file=$(realpath $config_file) \
+    || die "Configuration file is required." 
+. $config_file
+
 cd "$(dirname "$config_file")"
-safe_source $config_file
 
 [[ $use_disk == "undefined" ]] && \
   die "Explicitly declare: --use-existing-layout or --format-entire-disk."
@@ -153,7 +156,7 @@ else
 fi
 
 [[ "$use_disk" == "format-entire-disk" ]] && \
-  if ! prompt_yes_no "Entire disk (${wwn:-$image_file}) will be formatted. Proceed?"; then
+  if ! prompt_yes_no "Entire disk (${wwn:-$PWD/$image_file}) will be formatted. Proceed?"; then
     echo "Nothing done."
     exit 1
   fi 

@@ -33,10 +33,10 @@
 		
 		./attach-disk.sh $c
 		./create-rootfs-subvol.sh $c
-		./rsync-to-disk.sh $c ../rootfs.buster/			      		  # notice the / character at the end
-		sudo ./generate-scripts.sh $c -o --rootfs                     # generate the required scripts for booting
-		echo "new-hostname" | sudo tee /path/to/rootfs/etc/hostname   # only if necessary 
-		sudo ./chroot-to-disk.sh $c                                        # NOTE: still displays HOST's hostname, but that's OK
+		./rsync-to-disk.sh $c ../rootfs.buster/		 # notice the / character at the end
+		sudo ./generate-scripts.sh $c -o --rootfs    # generate the required scripts for booting
+		./set-hostname.sh $c   						 # optional 
+		sudo ./chroot-to-disk.sh $c                  # NOTE: Still displays HOST's hostname, that's OK
 		
 		# Run within the chroot environment: 
 		# -------------------------------------------------------

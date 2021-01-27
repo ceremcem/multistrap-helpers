@@ -1,6 +1,6 @@
 # Identify your disk (like UUID of a partition). Get this value from
 # ./get-disk-info.sh:
-wwn="ata-MYDISK-ID"
+wwn="ata-MYDISK-ID" # or image_file=./myimage.img
 
 # Give a name to your LVM volumes. This is usually same as your
 # installation name (eg. mysystem)

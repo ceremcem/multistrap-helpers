@@ -15,10 +15,13 @@ show_usage(){
 EOL
 }
 
+die(){ show_usage; exit 1; }
+
 config_file=${1:-}
-[[ ! -f $config_file ]] && { echo "Missing config file"; show_usage; exit 1; }
-cd "$(dirname "$config_file")"
-safe_source $config_file
+[[ -n $config_file && -f $config_file ]] \
+    && config_file=$(realpath $config_file) \
+    || die
+. $config_file
 
 src="${2:-}"
 [[ -n $src ]] || { echo "Missing source directory"; show_usage; exit 1; }

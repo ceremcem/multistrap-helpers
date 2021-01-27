@@ -3,10 +3,13 @@ set -eu
 
 safe_source () { [[ ! -z ${1:-} ]] && source $1; _dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"; _sdir=$(dirname "$(readlink -f "$0")"); }; safe_source
 
+die(){ echo "$@"; exit 1; }
+
 config_file=${1:-}
-[[ ! -f $config_file ]] && { echo "Usage: $(basename $0) path/to/config-file"; exit 1; }
-cd "$(dirname "$config_file")"
-safe_source $config_file
+[[ -n $config_file && -f $config_file ]] \
+    && config_file=$(realpath $config_file) \
+    || die "Configuration file is required." 
+. $config_file
 
 function echo_and_run {
   echo "$@"
@@ -14,6 +17,8 @@ function echo_and_run {
 }
 
 [[ $(whoami) = "root" ]] || { sudo "$0" "$@"; exit 0; }
+
+cd "$(dirname "$config_file")"
 
 # Attach the disk
 # ----------------
