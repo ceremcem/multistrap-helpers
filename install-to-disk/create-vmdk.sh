@@ -7,14 +7,14 @@ die(){ echo "$@"; exit 1; }
 
 if [[ "${1:-}" == "-c" ]]; then
 	shift  
+	this=$(realpath $0)
 	config_file=${1:-}
 	[[ -n $config_file && -f $config_file ]] \
 	    && config_file=$(realpath $config_file) \
 	    || die "Usage: $(basename $0) -c path/to/config-file"
+	cd "$(dirname "$config_file")"
 	. $config_file
-
-	this=$(realpath $0)
-	cd "$(dirname $config_file)" # create vmdk file in the same directory of config file.
+	
 	[[ -n ${wwn:-} ]] && { $this "--disk" $wwn; exit 0; }
 	[[ -n ${image_file:-} ]] && { $this "--file" "$image_file"; exit 0; }
 	echo "Something went wrong. You should set \$wwn or \$image_file."

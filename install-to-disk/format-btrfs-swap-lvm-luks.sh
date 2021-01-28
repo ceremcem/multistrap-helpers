@@ -105,9 +105,8 @@ config_file=${arg1:-}
 [[ -n $config_file && -f $config_file ]] \
     && config_file=$(realpath $config_file) \
     || die "Configuration file is required." 
-. $config_file
-
 cd "$(dirname "$config_file")"
+. $config_file
 
 [[ $use_disk == "undefined" ]] && \
   die "Explicitly declare: --use-existing-layout or --format-entire-disk."
@@ -123,7 +122,8 @@ file=
 if [[ -n ${wwn:-} ]]; then 
     DEVICE=$(readlink -f /dev/disk/by-id/$wwn)
     [[ -b $DEVICE ]] || die "$DEVICE should be a device file."
-elif [[ -f ${image_file:-} ]]; then
+else
+    [[ -f ${image_file:-} ]] || die "No such image file found: $(realpath $image_file)"
     file=$image_file
     echo "INFO: Handling $file as disk image file."
 fi

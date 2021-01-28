@@ -17,21 +17,20 @@ EOL
 
 die(){ show_usage; exit 1; }
 
+src="${2:-}"
+[[ -n $src ]] || { echo "Missing source directory"; show_usage; exit 1; } && src=$(realpath $src)
+
 config_file=${1:-}
 [[ -n $config_file && -f $config_file ]] \
     && config_file=$(realpath $config_file) \
     || die
+cd "$(dirname "$config_file")"
 . $config_file
-
-src="${2:-}"
-[[ -n $src ]] || { echo "Missing source directory"; show_usage; exit 1; }
 
 dest=$root_mnt/$subvol
 [[ -d $dest ]] || { echo "Missing destination directory ($dest), please create it first."; exit 1; }
 
-[[ $(whoami) = "root" ]] || { sudo "$0" "$@"; exit 0; }
-
 echo "Target dir is: $dest"
 sleep 1
-rsync -avP --delete $src/ $dest/
+sudo rsync -avP --delete $src/ $dest/
 

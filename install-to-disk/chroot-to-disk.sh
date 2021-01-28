@@ -7,14 +7,13 @@ die(){
     exit 1
 }
 
+[[ $(whoami) = "root" ]] || die "This script must be run as root."
 config_file=${1:-}
 [[ -n $config_file && -f $config_file ]] \
     && config_file=$(realpath $config_file) \
     || die "Usage: $(basename $0) path/to/config-file" 
-. $config_file
-
-[[ $(whoami) = "root" ]] || die "This script must be run as root."
 cd "$(dirname "$config_file")"
+. $config_file
 
 shift
 args=("${@:-}")

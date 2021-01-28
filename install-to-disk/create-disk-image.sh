@@ -7,6 +7,7 @@ config_file=${1:-}
 [[ -n $config_file && -f $config_file ]] \
     && config_file=$(realpath $config_file) \
     || die "Usage: $(basename $0) path/to/config-file"
+cd "$(dirname "$config_file")"
 . $config_file
 
 [[ -z $image_file ]] && { echo "Define image_file='path/to/disk.img' in your config."; exit 1; }
@@ -17,3 +18,5 @@ config_file=${1:-}
 
 # Creates file without causing fragmentation:
 fallocate -l 35G "$image_file"
+
+echo "$image_file is created."

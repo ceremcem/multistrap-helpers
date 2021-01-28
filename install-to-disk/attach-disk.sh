@@ -5,20 +5,18 @@ safe_source () { [[ ! -z ${1:-} ]] && source $1; _dir="$(cd "$(dirname "${BASH_S
 
 die(){ echo "$@"; exit 1; }
 
+[[ $(whoami) = "root" ]] || { sudo "$0" "$@"; exit 0; }
 config_file=${1:-}
 [[ -n $config_file && -f $config_file ]] \
     && config_file=$(realpath $config_file) \
     || die "Configuration file is required." 
+cd "$(dirname "$config_file")"
 . $config_file
 
 function echo_and_run {
   echo "$@"
   eval $(printf '%q ' "$@") < /dev/tty
 }
-
-[[ $(whoami) = "root" ]] || { sudo "$0" "$@"; exit 0; }
-
-cd "$(dirname "$config_file")"
 
 # Attach the disk
 # ----------------

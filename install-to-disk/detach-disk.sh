@@ -15,15 +15,13 @@ lvm_open_count(){
 
 die(){ echo "$@"; exit 1; }
 
+[[ $(whoami) = "root" ]] || { sudo "$0" "$@"; exit 0; }
 config_file=${1:-}
 [[ -n $config_file && -f $config_file ]] \
     && config_file=$(realpath $config_file) \
     || die "Configuration file is required." 
-. $config_file
-
-[[ $(whoami) = "root" ]] || { sudo "$0" "$@"; exit 0; }
-
 cd "$(dirname "$config_file")"
+. $config_file
 
 echo "Detaching ${lvm_name}..."
 if sudo btrfs scrub cancel $root_mnt 2> /dev/null; then
