@@ -1,22 +1,24 @@
 # 1. Create a config file
 
-1. Name your installation (eg. "mysystem")
-2. Copy `./config-example.sh` as `config-mysystem.sh` and edit accordingly.
-3. First, assign the `wwn=` variable by using `./get-disk-info.sh` (and then `./get-disk-info.sh /dev/sdX`). (You may also `create-disk-image.sh` and set `image_file=` variable to continue with the image file.)
-4. Give a name to your LVM volumes by setting `lvm_name=` variable. This is usually the same as your installation name (eg. mysystem).
-5. Do not set any other variables at this point. Further instructions will be clarified within the next steps.
+1. Create a configuration file by modifying `config-example.sh`. 
+2. Fill variables in "Phase 1/2".
 
-> Optional: To prevent any possible mistakes, use `$c` variable instead of `./config-mysystem.sh`:
+> Recommended: To prevent any possible mistakes, use a (eg. `$c`) variable:
 >
->        export c="./config-mysystem.sh"
+>        c="path/to/mysystem/config.sh"
 
 
 # 2. Install to the Physical Disk
+
+> You may create an image file by using `./create-disk-image.sh $c`.
 
 1. Create the designed partition layout:
 
 		# Either --use-existing-layout or --format-entire-disk
         ./format-btrfs-swap-lvm-luks.sh $c --use-one-of-the-above-switches
+
+        # Optional: Assign a key to your LUKS partition for auto mounting
+        ./assign-key-to-luks.sh $c
 
   This will create the following layout:
 
@@ -27,7 +29,7 @@
 				/dev/mapper/${lvm_name}-swap
 			
 			
-2. Use the given information in the previous step (or manually get by `./get-disk-info.sh /dev/sdX`) to assign `boot_part` and `crypt_part` variables in `./config-mysystem.sh`.
+2. Use the given information in the previous step (or manually get by `./get-disk-info.sh /dev/sdX`) to assign `boot_part` and `crypt_part` variables in your config file (Phase 2/2).
 		
 3. Send `../rootfs.buster` to the target disk and make it bootable:
 		
