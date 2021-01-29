@@ -7,7 +7,6 @@
 >
 >      c="path/to/mysystem/config.sh"
 
-
 # 2. Install to the Physical Disk
 
 > You may create an image file by using `./create-disk-image.sh $c`.
