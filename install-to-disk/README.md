@@ -5,7 +5,7 @@
 
 > Recommended: To prevent any possible mistakes, use a (eg. `$c`) variable:
 >
->        c="path/to/mysystem/config.sh"
+>      c="path/to/mysystem/config.sh"
 
 
 # 2. Install to the Physical Disk
