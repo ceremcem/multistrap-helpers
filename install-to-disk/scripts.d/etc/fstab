@@ -4,4 +4,6 @@
 {{root_dev}}    {{root_mnt}}    btrfs   subvolid=5,rw,noatime               0       1
 {{boot_part}}   /boot           ext2    defaults,noatime                    0       2
 tmpfs           /tmp            tmpfs   defaults,noatime,noexec,nosuid,nodev,mode=1777,size=512M    0   0
-{{swap_dev}}    none            swap    sw                                  0       0
+# Manually enable swap when needed (ie. hibernation)
+# See https://superuser.com/a/1622306/187576
+#{{swap_dev}}    none            swap    sw                                  0       0

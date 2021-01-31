@@ -1,6 +1,6 @@
 # 1. Create a config file
 
-1. Create a configuration file by modifying `config-example.sh`. 
+1. Create a configuration file by modifying `example/config.sh`. 
 2. Fill variables in "Phase 1/2".
 
 > Recommended: To prevent any possible mistakes, use a (eg. `$c`) variable:
