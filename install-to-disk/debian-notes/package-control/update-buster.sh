@@ -18,3 +18,5 @@ set -x
 sudo apt-get dist-upgrade
 
 /sbin/vboxconfig
+sudo service vboxdrv start
+
