@@ -226,7 +226,7 @@ cryptsetup open "$partt2" $D_DEVICE
 info "Creating LVM partitions"
 pvcreate "/dev/mapper/$D_DEVICE" || echo_err "physical volume exists.."
 vgcreate "${ROOT_NAME}" "/dev/mapper/$D_DEVICE" || echo_err "volume group exists.."
-lvcreate -n swap -L 1G $ROOT_NAME
+lvcreate -n swap -L 16G $ROOT_NAME  # Should be enough to hold RAM on hibernation
 lvcreate -n root -l 100%FREE $ROOT_NAME
 
 info "Formatting swap and root (btrfs) partitions"
