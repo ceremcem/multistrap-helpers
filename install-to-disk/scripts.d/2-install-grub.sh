@@ -26,3 +26,4 @@ fi
 set -x
 grub-install /dev/$disk_device --boot-directory=/boot
 update-grub # update grub.cfg
+sync
