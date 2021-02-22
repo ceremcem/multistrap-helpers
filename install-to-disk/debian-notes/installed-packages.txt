@@ -1,3 +1,4 @@
+earlyoom
 cups
 firmware-linux-nonfree
 iputils-ping # --reinstall, https://serverfault.com/a/717909/261445
