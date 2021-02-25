@@ -1,3 +1,6 @@
 [submodule "install-to-disk/bash-templater"]
 	path = install-to-disk/bash-templater
 	url = https://github.com/ceremcem/bash-templater
+[submodule "install-to-disk/debian-notes"]
+	path = install-to-disk/debian-notes
+	url = https://github.com/ceremcem/debian-notes
