@@ -9,11 +9,11 @@
 
 # 2. Install to the Physical Disk
 
-> You may create an image file by using `./create-disk-image.sh $c`.
+> OPTIONAL: You may create an image file by using `./create-disk-image.sh $c`.
 
 1. Create the designed partition layout:
 
-		# Either --use-existing-layout or --format-entire-disk
+		    # Either --use-existing-layout or --format-entire-disk
         ./format-btrfs-swap-lvm-luks.sh $c --use-one-of-the-above-switches
 
         # Optional: Assign a key to your LUKS partition for auto mounting

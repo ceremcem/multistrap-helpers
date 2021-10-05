@@ -1,6 +1,7 @@
 rootfs.*/
 *config*.sh
 !install-to-disk/example/config.sh
+install-to-disk/example/my-luks-key
 *.swp
 *.vmdk
 *.sqsh

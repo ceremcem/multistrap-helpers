@@ -4,6 +4,12 @@ These scripts are intended to create a Debian rootfs from scratch. You can later
 for creating an LXC container and later (or immediately, without creating an LXC container) 
 create a real installation. 
 
+1. Clone this repo recursively:
+
+    ```
+    git clone --recursive https://github.com/ceremcem/multistrap-helpers
+    ```
+
 1. Create the rootfs:
 		
 	```console

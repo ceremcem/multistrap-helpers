@@ -14,17 +14,19 @@ fi
 if [[ ! -b $disk_device ]]; then
 	cat << EOL
 
-Usage:
-
-    $(basename $0) /dev/sda
-    -or-
-    $(basename $0) path/to/disk.img
-
     Possible disks:
 
 $(sudo lsblk -f)
 
 $(losetup -a)
+
+
+Usage:
+
+    $(basename $0) /dev/sda # use one of the above disks
+    -or-
+    $(basename $0) path/to/disk.img
+
 
 EOL
 	exit 1
