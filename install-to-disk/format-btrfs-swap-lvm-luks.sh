@@ -108,6 +108,8 @@ config_file=${arg1:-}
 cd "$(dirname "$config_file")"
 . $config_file
 
+[[ -z $swap_size ]] && die "New config feature: You need to define \$swap_size variable in your config file." 
+
 [[ $use_disk == "undefined" ]] && \
   die "Explicitly declare: --use-existing-layout or --format-entire-disk."
 
