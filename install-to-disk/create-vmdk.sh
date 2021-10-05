@@ -21,7 +21,7 @@ if [[ "${1:-}" == "-c" ]]; then
 	exit 1
 fi
 
-# hack for first arguments
+# hack for the internal arguments ("--file" or "--disk")
 [[ -n ${1:-} ]] && shift 
 
 if [[ -b ${1:-} ]]; then
@@ -34,7 +34,7 @@ elif [[ -f ${1:-} ]]; then
 	vmdk_name="$(basename $file).vmdk"
 	echo "pwd is: $PWD"
 else
-	die "Usage: $(basename $0) -c path/to/config-file"
+	die "No device like ${1:-} can be found. Check your config file."
 fi
 
 #[[ $(whoami) = "root" ]] || { sudo "$0" "$@"; exit 0; }
