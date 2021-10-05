@@ -1,6 +1,6 @@
 rootfs.*/
 *config*.sh
-!config-example.sh
+!install-to-disk/example/config.sh
 *.swp
 *.vmdk
 *.sqsh
