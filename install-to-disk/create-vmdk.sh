@@ -24,11 +24,9 @@ fi
 # hack for the internal arguments ("--file" or "--disk")
 [[ -n ${1:-} ]] && shift 
 
-if [[ -b ${1:-} ]]; then
-	device=$(readlink -f $1)
-	disk_id=$(ls -l /dev/disk/by-id/ | grep "/$(basename $device)$" | awk '{print $9}' | grep -v wwn)
-	disk_path="/dev/disk/by-id/$disk_id"
-	vmdk_name="$disk_id.vmdk"
+if [[ -b /dev/disk/by-id/${1:-} ]]; then
+	disk_path="/dev/disk/by-id/${1}"
+	vmdk_name="${1}.vmdk"
 elif [[ -f ${1:-} ]]; then
 	file=$1
 	vmdk_name="$(basename $file).vmdk"
@@ -38,10 +36,10 @@ else
 fi
 
 #[[ $(whoami) = "root" ]] || { sudo "$0" "$@"; exit 0; }
-echo "Device: ${disk_path:-$file}, Disk id: ${disk_id:-$file}"
+_device=${disk_path:-$file}
+echo "Device: ${_device}"
 
 # Taken from: https://superuser.com/a/756731/187576
-_device=${disk_path:-$file}
 vmdk_name="virtualbox-$vmdk_name"
 echo "Creating vmdk for ${_device}"
 VBoxManage internalcommands createrawvmdk \
