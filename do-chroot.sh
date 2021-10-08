@@ -4,7 +4,7 @@ help(){
 	cat << HELP
 
  chroot into a rootfs for the same architecture
- usage: sudo $(basename $0) rootdir
+ usage: sudo $(basename $0) rootdir [[--unattended] command-to-execute-in-chroot]
 
 HELP
 }
@@ -14,39 +14,44 @@ HELP
 [[ $(whoami) = "root" ]] || { sudo "$0" "$@"; exit 0; }
 
 cmd=
-if [[ ! -z ${2:-} ]]; then
+
+rootdir="${1}"
+shift
+
+if [[ -n ${1:-} ]]; then
+    [[ "$1" == "--unattended" ]] && { sw="-f"; shift; } || sw="--rcfile"
 	tmp_file=/tmp/cmd.sh
-	cmd="--rcfile $tmp_file"
-	echo $2 > $1/$tmp_file
-	echo "rm $tmp_file" >> $1/$tmp_file
-	chmod +x $1/$tmp_file
+	cmd="${sw} $tmp_file"
+	echo $1 > $rootdir/$tmp_file
+	echo "rm $tmp_file" >> $rootdir/$tmp_file
+	chmod +x $rootdir/$tmp_file
 fi
 
-echo chrooting into $1
-mkdir -p $1/proc
-mkdir -p $1/sys
-mkdir -p $1/dev
-mkdir -p $1/run
+echo chrooting into $rootdir
+mkdir -p $rootdir/proc
+mkdir -p $rootdir/sys
+mkdir -p $rootdir/dev
+mkdir -p $rootdir/run
 
-cat << RESOLV > $1/etc/resolv.conf
+cat << RESOLV > $rootdir/etc/resolv.conf
 nameserver 8.8.8.8
 nameserver 8.8.4.4
 RESOLV
 
-mount --bind /proc $1/proc
-mount --bind /sys $1/sys
-mount --bind /dev $1/dev
-mount --bind /dev/pts $1/dev/pts
-mount --bind /run $1/run
+mount --bind /proc $rootdir/proc
+mount --bind /sys $rootdir/sys
+mount --bind /dev $rootdir/dev
+mount --bind /dev/pts $rootdir/dev/pts
+mount --bind /run $rootdir/run
 
-chroot $1 /bin/bash $cmd
+chroot $rootdir /bin/bash $cmd
 
-umount $1/run
-umount $1/dev/pts
-umount $1/dev
-umount $1/sys
-umount $1/proc || umount -lf $1/proc
+umount $rootdir/run
+umount $rootdir/dev/pts
+umount $rootdir/dev
+umount $rootdir/sys
+umount $rootdir/proc || umount -lf $rootdir/proc
 
-rm $1/var/lib/dbus/machine-id 2> /dev/null
+rm $rootdir/var/lib/dbus/machine-id 2> /dev/null
 
-echo "Cleaned up chroot."
+echo "Cleaned up chroot ($rootdir)."
