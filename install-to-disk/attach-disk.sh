@@ -46,7 +46,7 @@ umount $root_dev 2> /dev/null || true
 
 set +e
 echo "Mounting $root_dev"
-mount $root_dev $root_mnt -o noatime
+mount $root_dev $root_mnt -o ${mount_opts:-noatime}
 if [[ $? -ne 0 ]]; then
     cat << EOL
 

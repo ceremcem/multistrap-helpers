@@ -19,6 +19,10 @@ if [[ "${1:-}" == "-c" ]]; then
 	[[ -n ${image_file:-} ]] && { $this "--file" "$image_file"; exit 0; }
 	echo "Something went wrong. You should set \$wwn or \$image_file."
 	exit 1
+else
+    if [[ "$1" != "--disk" ]] && [[ "$1" != "--file" ]]; then
+        die "Usage: $(basename $0) -c path/to/config-file"
+    fi
 fi
 
 # hack for the internal arguments ("--file" or "--disk")

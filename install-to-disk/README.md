@@ -17,7 +17,7 @@
         ./format-btrfs-swap-lvm-luks.sh $c --use-one-of-the-above-switches
 
         # Optional: Assign a key to your LUKS partition for auto mounting
-        ./assign-key-to-luks.sh $c
+        ./assign-key-to-luks.sh $c  # hints will be shown if there is no such key found
 
   This will create the following layout:
 

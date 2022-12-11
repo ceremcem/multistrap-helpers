@@ -1,15 +1,26 @@
-# use `./get-disk-info.sh /dev/sdX` to get WWN
-wwn="usb-SanDisk_Cruzer_Glide_3.0_4C530001030827103162-0:0"
-lvm_name="myexample" # DON'T FORGET TO CHANGE THIS
+# Follow the multistrap-helpers/install-to-disk/README.md
 
-# use `./get-disk-info.sh /dev/sdX` after creating the disk layout
-# to identify the UUID's:
-boot_part='UUID=97590f23-55dc-481d-94fe-61f0449840de'
-crypt_part='UUID=2941ba48-2dac-4c22-8eac-cb9a652c11e7'
+# Identify your disk (like UUID of a partition). Get this value from
+# ./get-disk-info.sh:
+wwn="ata-KIOXIA-EXCERIA_SATA_SSD_72RB8191K0Z5"
+
+# Give a name to your LVM volumes. This is usually same as your
+# installation name (eg. mysystem)
+lvm_name="kanat"
+
+# Define swap_size and make sure that the RAM can fit into the swap area
+swap_size="16G"
+
+# Assign below variables *after* partitioning the disk
+# (format-btrfs-swap-lvm-luks.sh... step)
+# use ./get-disk-info.sh /dev/sdX again to identify the UUID's:
+boot_part='UUID=6d2f530b-db0f-4e84-940e-ecbf1749ed05'
+crypt_part='UUID=434558cc-ac13-4814-8050-144e70961257'
+
+# OPTIONAL: Define your crypt_key path:
 crypt_key="$(cat ./keypath)"
 
 # you probably won't need to change those:
-swap_size="2G" # Should be enough to hold RAM on hibernation
 crypt_dev_name=${lvm_name}_crypt
 root_lvm=${lvm_name}-root
 swap_lvm=${lvm_name}-swap
@@ -18,4 +29,3 @@ subvol=${subvol:-rootfs}
 root_dev=/dev/mapper/${root_lvm}
 swap_dev=/dev/mapper/${swap_lvm}
 root_mnt="/mnt/$root_lvm"
-
