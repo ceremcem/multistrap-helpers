@@ -50,7 +50,7 @@ mount $root_dev $root_mnt -o ${mount_opts:-noatime}
 if [[ $? -ne 0 ]]; then
     cat << EOL
 
-Mounting $root_dev failed. If this device had a RAID-1
+$(basename $0): Mounting $root_dev failed. If this device had a RAID-1
 configuration and the failure is because of a missing device,
 you may try to mount the partition Readonly by the following
 command:

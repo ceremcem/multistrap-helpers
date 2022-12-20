@@ -7,13 +7,13 @@
 >
 >      c="path/to/mysystem/config.sh"
 
-# 2. Install to the Physical Disk
+# 2. Prepare the Disk
 
 > OPTIONAL: You may create an image file by using `./create-disk-image.sh $c`.
 
 1. Create the designed partition layout:
 
-		    # Either --use-existing-layout or --format-entire-disk
+        # Either --use-existing-layout or --format-entire-disk
         ./format-btrfs-swap-lvm-luks.sh $c --use-one-of-the-above-switches
 
         # Optional: Assign a key to your LUKS partition for auto mounting
@@ -29,8 +29,10 @@
 			
 			
 2. Use the given information in the previous step (or manually get by `./get-disk-info.sh /dev/sdX`) to assign `boot_part` and `crypt_part` variables in your config file (Phase 2/2).
+
+# 3. Install to the Physical Disk
 		
-3. Send `../rootfs.buster` to the target disk and make it bootable:
+1. Send `../rootfs.buster` to the target disk and make it bootable:
 		
 		./attach-disk.sh $c
 		./create-rootfs-subvol.sh $c
