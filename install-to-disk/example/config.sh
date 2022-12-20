@@ -1,7 +1,9 @@
 # Follow the multistrap-helpers/install-to-disk/README.md
 
+# Phase 1/2
+#---------------------------------------------------------------------
 # Identify your disk (like UUID of a partition). Get this value from
-# ./get-disk-info.sh:
+# ./get-disk-info.sh /dev/sdX:
 wwn="ata-KIOXIA-EXCERIA_SATA_SSD_72RB8191K0Z5"
 
 # Give a name to your LVM volumes. This is usually same as your
@@ -11,6 +13,11 @@ lvm_name="kanat"
 # Define swap_size and make sure that the RAM can fit into the swap area
 swap_size="16G"
 
+# Define boot_size (default: 1G)
+boot_size="1000M"
+
+# Phase 2/2
+#---------------------------------------------------------------------
 # Assign below variables *after* partitioning the disk
 # (format-btrfs-swap-lvm-luks.sh... step)
 # use ./get-disk-info.sh /dev/sdX again to identify the UUID's:

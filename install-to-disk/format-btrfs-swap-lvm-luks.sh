@@ -182,7 +182,7 @@ if [[ "$use_disk" == "format-entire-disk" ]]; then
     p # primary partition
     1 # partition number 1
       # default - start at beginning of disk
-    +300M # boot parttion
+    +${boot_size:-1G} # boot parttion
     t # change the type (1st partition will be selected automatically)
     83 # Changed type of partition to 'Linux'
     n # new partition
