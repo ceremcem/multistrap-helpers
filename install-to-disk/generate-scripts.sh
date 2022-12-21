@@ -106,6 +106,8 @@ echo "Outdir is set to: $outdir"
 [[ -d $outdir ]] || err "--outdir must be a directory."
 [[ -w $outdir ]] || err "Output directory ($outdir) is not writable. (Do we have correct permissions?)"
 
+[[ -z ${mount_opts:-} ]] && mount_opts="rw,noatime"
+
 TEMPLATER="$_sdir/bash-templater/templater.sh"
 _ext=".$(timestamp).bak" # backup extension
 cd $_sdir
