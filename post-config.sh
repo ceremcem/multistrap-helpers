@@ -14,6 +14,10 @@ else
 fi
 dpkg --configure -a
 
+# Required /sbin/init by LXC
+# see https://github.com/ceremcem/multistrap-helpers/issues/4
+[[ -e /sbin/init ]] || ln -s /lib/systemd/systemd /sbin/init
+
 unset DEBIAN_FRONTEND DEBCONF_NONINTERACTIVE_SEEN
 
 
