@@ -1,31 +1,96 @@
 #!/bin/bash
-set -eu
+set -eu -o pipefail
+safe_source () { [[ ! -z ${1:-} ]] && source $1; _dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"; _sdir=$(dirname "$(readlink -f "$0")"); }; safe_source
+# end of bash boilerplate
 
-config=${1:-}
-if [[ -z $config ]]; then
-	echo "You should set the target suite:"
-	echo
-	echo "    $(basename $0) release.config"
-	echo
-	exit 2
-fi
+# magic variables
+# $_dir  : this script's (or softlink's) directory
+# $_sdir : this script's real file's directory
 
-[[ $(whoami) = "root" ]] || { sudo "$0" "$@"; exit 0; }
+show_help(){
+    cat <<HELP
+
+    $(basename $0) [options] path/to/release.config
+
+    Options:
+
+        --subvolume      : Download into a subvolume 
+
+HELP
+}
+
+die(){
+    >&2 echo
+    >&2 echo "$@"
+    exit 1
+}
+
+help_die(){
+    >&2 echo
+    >&2 echo "$@"
+    show_help
+    exit 1
+}
+
+# Parse command line arguments
+# ---------------------------
+# Initialize parameters
+subvolume=false
+# ---------------------------
+args_backup=("$@")
+args=()
+_count=1
+while [ $# -gt 0 ]; do
+    key="${1:-}"
+    case $key in
+        -h|-\?|--help|'')
+            show_help    # Display a usage synopsis.
+            exit
+            ;;
+        # --------------------------------------------------------
+        --subvolume)
+            subvolume=true
+            ;;
+        # --------------------------------------------------------
+        -*) # Handle unrecognized options
+            help_die "Unknown option: $1"
+            ;;
+        *)  # Generate the new positional arguments: $arg1, $arg2, ... and ${args[@]}
+            if [[ ! -z ${1:-} ]]; then
+                declare arg$((_count++))="$1"
+                args+=("$1")
+            fi
+            ;;
+    esac
+    [[ -z ${1:-} ]] && break || shift
+done; set -- "${args_backup[@]-}"
+# Use $arg1 in place of $1, $arg2 in place of $2 and so on, 
+# "$@" is in the original state,
+# use ${args[@]} for new positional arguments  
+
+
+# Empty argument checking
+# -----------------------------------------------
+[[ -z ${arg1:-} ]] && help_die "Config is required"
+config=$arg1
+
+[[ $(whoami) = "root" ]] || exec sudo "$0" "$@"
 
 release=${config%.*} # remove the .config extension
 target_dir=./rootfs.$release
-echo "Creating rootfs for Debian $release in $target_dir"
-mkdir -p $target_dir
+echo "Creating rootfs for Debian $release in $(realpath $target_dir)"
+
+if $subvolume; then 
+	[[ -e "$target_dir" ]] || btrfs sub create "$target_dir"
+else 
+	mkdir -p $target_dir
+fi 
 if [ ! -z "$(ls -A $target_dir)" ]; then
-	echo "Remove the $target_dir or multistrap will fail."
-	echo
-	read -p "Remove $target_dir? [y/n]" -n 1 -r
-	echo    # (optional) move to a new line
-	if [[ ! $REPLY =~ ^[Yy]$ ]]
-	then
-	    echo "Cancelled removal. Exiting."
-	    [[ "$0" = "$BASH_SOURCE" ]] && exit 1 || return 1 # handle exits from shell or function but don't exit interactive shell
-	fi
+	echo "Remove the contents of $target_dir"
+	exit 1
+fi 
+
+if [[ -d "$target_dir/dev" ]]; then 
 	if mountpoint $target_dir/dev > /dev/null; then
 		echo "ERROR: "
 		echo "ERROR: Seems to be chrooted to the target."
@@ -33,10 +98,10 @@ if [ ! -z "$(ls -A $target_dir)" ]; then
 		echo "ERROR: exiting."
 		echo "ERROR: "
 		exit
-	else
-		[[ -d $target_dir ]] && rm -rf $target_dir
 	fi
 fi
+
+# create rootfs 
 multistrap -a amd64 -d $target_dir -f $config
 
 echo "debian" > $target_dir/etc/hostname
