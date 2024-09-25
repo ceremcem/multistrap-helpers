@@ -15,6 +15,7 @@ show_help(){
     Options:
 
         --subvolume      : Download into a subvolume 
+		--arch 			 : Architecture (default: amd64)
 
 HELP
 }
@@ -36,6 +37,7 @@ help_die(){
 # ---------------------------
 # Initialize parameters
 subvolume=false
+arch="amd64"
 # ---------------------------
 args_backup=("$@")
 args=()
@@ -76,14 +78,15 @@ config=$arg1
 
 [[ $(whoami) = "root" ]] || exec sudo "$0" "$@"
 
-release=${config%.*} # remove the .config extension
-target_dir=./rootfs.$release
+release=$(basename $config)
+release=${release%.*} # remove the .config extension
+target_dir="$_dir/rootfs.$release"
 echo "Creating rootfs for Debian $release in $(realpath $target_dir)"
 
 if $subvolume; then 
 	[[ -e "$target_dir" ]] || btrfs sub create "$target_dir"
 else 
-	mkdir -p $target_dir
+	mkdir -p "$target_dir"
 fi 
 if [ ! -z "$(ls -A $target_dir)" ]; then
 	echo "Remove the contents of $target_dir"
@@ -102,11 +105,11 @@ if [[ -d "$target_dir/dev" ]]; then
 fi
 
 # create rootfs 
-multistrap -a amd64 -d $target_dir -f $config
+multistrap -a $arch -d "$target_dir" -f "$config"
 
-echo "debian" > $target_dir/etc/hostname
-cp post-config.sh $target_dir/
-./do-chroot.sh $target_dir \
+echo "debian" > "$target_dir/etc/hostname"
+cp "$_sdir/post-config.sh" "$target_dir/"
+"$_sdir/do-chroot.sh" "$target_dir" \
 	"[[ -f /post-config.sh ]] && /post-config.sh && rm /post-config.sh; exit 0"
 
 echo "Building $target_dir is finished."
