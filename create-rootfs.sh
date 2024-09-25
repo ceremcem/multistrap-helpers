@@ -14,8 +14,8 @@ show_help(){
 
     Options:
 
-        --subvolume      : Download into a subvolume 
-		--arch 			 : Architecture (default: amd64)
+        --use-subvolume      : Download into a subvolume 
+		--arch 			     : Architecture (default: amd64)
 
 HELP
 }
@@ -50,7 +50,7 @@ while [ $# -gt 0 ]; do
             exit
             ;;
         # --------------------------------------------------------
-        --subvolume)
+        --use-subvolume)
             subvolume=true
             ;;
         # --------------------------------------------------------
