@@ -55,7 +55,6 @@ HELP
 die(){
     echo
     echo "$1"
-    show_help
     exit 1
 }
 
@@ -85,7 +84,7 @@ while :; do
             ;;
         # --------------------------------------------------------
         -*) # Handle unrecognized options
-            die "Unknown option: $1"
+            show_help "Unknown option: $1"
             ;;
         *)  # Generate the new positional arguments: $arg1, $arg2, ... and ${args[@]}
             if [[ ! -z ${1:-} ]]; then
@@ -104,7 +103,7 @@ done; set -- "${args_backup[@]}"
 config_file=${arg1:-}
 [[ -n $config_file && -f $config_file ]] \
     && config_file=$(realpath $config_file) \
-    || die "Configuration file is required." 
+    || show_help "Configuration file is required." 
 cd "$(dirname "$config_file")"
 . $config_file
 
@@ -144,16 +143,21 @@ else
     if [[ "$use_disk" == "format-entire-disk" ]]; then
       partt1="${DEVICE}1"
       partt2="${DEVICE}2"
+
+      echo "INFO: partt1: ${partt1}, partt2: ${partt2}, DEVICE: ${DEVICE}"
     elif [[ "$use_disk" == "use-existing-partitions" ]]; then
       partt1=$(readlink -f "/dev/disk/by-uuid/${boot_part##UUID=}")
       partt2=$(readlink -f "/dev/disk/by-uuid/${crypt_part##UUID=}")
+
+      echo "INFO: partt1: ${partt1}, partt2: ${partt2}, DEVICE: ${DEVICE}"
+
       [[ -b $partt1 ]] || die "$partt1 is not a block device."
       [[ "/dev/$(lsblk -no pkname $partt1)" == "$DEVICE" ]] || \
         die "$partt1 does not seem to be on $DEVICE"
 
       [[ -b $partt2 ]] || die "$partt2 is not a block device."
       [[ "/dev/$(lsblk -no pkname $partt2)" == "$DEVICE" ]] || \
-        die "$partt1 does not seem to be on $DEVICE"
+        die "$partt2 does not seem to be on $DEVICE"
     fi
 fi
 
