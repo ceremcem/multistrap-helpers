@@ -36,7 +36,12 @@ __use_key=
 cryptsetup open $crypt_part $crypt_dev_name $__use_key
 while sleep 1; do 
   lvscan | grep ACTIVE | grep $lvm_name && break
+  echo "re-scanning LVM group"
+  set -x
+  vgscan
+  vgchange -ay
 done
+set +x
 
 mkdir -p "$root_mnt"
 
@@ -50,15 +55,19 @@ mount $root_dev $root_mnt -o ${mount_opts:-noatime}
 if [[ $? -ne 0 ]]; then
     cat << EOL
 
-$(basename $0): Mounting $root_dev failed. If this device had a RAID-1
-configuration and the failure is because of a missing device,
-you may try to mount the partition Readonly by the following
-command:
+$(basename $0): Mounting $root_dev failed. Your mount options
+was:
+
+    $mount_opts
+
+Hint: If this device had a RAID-1 configuration and the failure 
+is because of a missing device, you may try to mount the partition 
+Readonly by the following command:
 
 	mount -t btrfs -o ro,degraded,noatime $root_dev $root_mnt
 
 EOL
-    exit
+    exit 2
 fi
 set -e
 
