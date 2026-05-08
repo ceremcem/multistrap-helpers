@@ -7,7 +7,6 @@ config_file="$(realpath ${1:-})"
 safe_source $config_file
 
 [[ -z ${crypt_key:-} ]] && { echo "You should define \$crypt_key variable in your config file."; exit 2; }
-
 if ! [[ -f $crypt_key ]]; then
     echo "You should generate a random file to use as a key. Example:"
     echo
