@@ -4,7 +4,6 @@ safe_source () { [[ ! -z ${1:-} ]] && source $1; _dir="$(cd "$(dirname "${BASH_S
 
 config_file="$(realpath ${1:-})"
 [[ ! -f $config_file ]] && { echo "Usage: $(basename $0) path/to/config-file"; exit 1; }
-cd "$(dirname "$config_file")"
 safe_source $config_file
 
 [[ -z ${crypt_key:-} ]] && { echo "You should define \$crypt_key variable in your config file."; exit 2; }
